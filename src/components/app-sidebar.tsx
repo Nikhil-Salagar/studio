@@ -18,8 +18,8 @@ import { Button } from './ui/button';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/dashboard/market', label: 'Market Prices', icon: BarChart3 },
   { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
+  { href: '/dashboard/market', label: 'Market Prices', icon: BarChart3 },
   { href: '/dashboard/finance', label: 'Finance', icon: Landmark },
   { href: '/dashboard/community', label: 'Community', icon: Users },
   { href: '/dashboard/ask-ai', label: 'Ask AI', icon: Sparkles },
@@ -51,7 +51,7 @@ export function AppSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
              <SidebarMenuItem key={item.href}>
-                <Link href={item.href} legacyBehavior passHref>
+                <Link href={item.href} passHref>
                   <SidebarMenuButton
                     isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
                     tooltip={item.label}
