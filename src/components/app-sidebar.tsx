@@ -10,9 +10,10 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/app-logo';
-import { Home, BarChart3, Sprout, Users, User, LogOut, Landmark, Sparkles } from 'lucide-react';
+import { Home, BarChart3, Sprout, Users, User, LogOut, Landmark, Sparkles, PanelLeft } from 'lucide-react';
 import { Button } from './ui/button';
 
 const navItems = [
@@ -36,23 +37,30 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <AppLogo />
+        <div className="flex items-center justify-between">
+            <AppLogo />
+            <SidebarTrigger asChild className="md:hidden">
+                <Button size="icon" variant="ghost">
+                    <PanelLeft />
+                    <span className="sr-only">Toggle Menu</span>
+                </Button>
+            </SidebarTrigger>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                tooltip={item.label}
-                className="justify-start"
-              >
-                <Link href={item.href}>
-                  <item.icon className="h-5 w-5" />
-                  <span className="text-base">{item.label}</span>
+             <SidebarMenuItem key={item.href}>
+                <Link href={item.href} legacyBehavior passHref>
+                  <SidebarMenuButton
+                    isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
+                    tooltip={item.label}
+                    className="justify-start"
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="text-base">{item.label}</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
