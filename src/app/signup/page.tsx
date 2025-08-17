@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AppLogo } from "@/components/app-logo";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     router.push('/dashboard');
   };
@@ -23,13 +23,17 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <AppLogo />
           </div>
-          <CardTitle className="text-3xl font-headline">Welcome Back!</CardTitle>
+          <CardTitle className="text-3xl font-headline">Create an Account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Join our community of modern farmers
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input id="name" type="text" placeholder="John Doe" required />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" placeholder="farmer@example.com" required />
@@ -39,13 +43,13 @@ export default function LoginPage() {
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full text-lg py-6">
-              Login
+              Sign Up
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="underline text-primary font-semibold hover:text-primary/80">
-              Sign up
+            Already have an account?{" "}
+            <Link href="/" className="underline text-primary font-semibold hover:text-primary/80">
+              Login
             </Link>
           </div>
         </CardContent>
