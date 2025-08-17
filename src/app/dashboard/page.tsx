@@ -1,6 +1,9 @@
 import { PageHeader } from '@/components/page-header';
 import { WeatherCard } from '@/components/features/weather-card';
 import { Home } from 'lucide-react';
+import { MarketPriceCard } from '@/components/features/market-price-card';
+import { CropSuggestionCard } from '@/components/features/crop-suggestion-card';
+import { CommunityQaCard } from '@/components/features/community-qa-card';
 
 export default function DashboardHomePage() {
   return (
@@ -10,8 +13,15 @@ export default function DashboardHomePage() {
         description="Here's a quick overview of your farm's status."
         icon={Home}
       />
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <WeatherCard />
+        <MarketPriceCard />
+        <div className="lg:col-span-2">
+            <CropSuggestionCard />
+        </div>
+        <div className="lg:col-span-2">
+            <CommunityQaCard />
+        </div>
       </div>
     </div>
   );
