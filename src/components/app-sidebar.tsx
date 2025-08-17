@@ -12,7 +12,7 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/app-logo';
-import { Home, BarChart3, Sprout, Users, User, LogOut, Sparkles } from 'lucide-react';
+import { Home, BarChart3, Sprout, Users, User, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 
 const navItems = [
@@ -20,7 +20,6 @@ const navItems = [
   { href: '/dashboard/market', label: 'Market', icon: BarChart3 },
   { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
   { href: '/dashboard/community', label: 'Community', icon: Users },
-  { href: '/dashboard/ask-ai', label: 'Ask AI', icon: Sparkles },
   { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
 

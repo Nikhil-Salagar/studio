@@ -4,6 +4,7 @@ import { Home } from 'lucide-react';
 import { MarketPriceCard } from '@/components/features/market-price-card';
 import { CropSuggestionCard } from '@/components/features/crop-suggestion-card';
 import { CommunityQaCard } from '@/components/features/community-qa-card';
+import { AskAiCard } from '@/components/features/ask-ai-card';
 
 export default function DashboardHomePage() {
   return (
@@ -21,6 +22,9 @@ export default function DashboardHomePage() {
         </div>
         <div className="lg:col-span-2">
             <CommunityQaCard />
+        </div>
+        <div className="lg:col-span-2">
+            <AskAiCard />
         </div>
       </div>
     </div>
