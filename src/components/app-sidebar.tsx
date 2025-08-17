@@ -17,7 +17,7 @@ import { Button } from './ui/button';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/dashboard/market', label: 'Market', icon: BarChart3 },
+  { href: '/dashboard/market', label: 'Market Prices', icon: BarChart3 },
   { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
   { href: '/dashboard/finance', label: 'Finance', icon: Landmark },
   { href: '/dashboard/community', label: 'Community', icon: Users },
