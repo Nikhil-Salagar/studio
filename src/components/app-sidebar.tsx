@@ -9,8 +9,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
   SidebarTrigger,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/app-logo';
 import { Home, BarChart3, Sprout, Users, User, LogOut, Landmark, Sparkles, PanelLeft } from 'lucide-react';
@@ -39,11 +39,9 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center justify-between">
             <AppLogo />
-            <SidebarTrigger asChild className="md:hidden">
-                <Button size="icon" variant="ghost">
-                    <PanelLeft />
-                    <span className="sr-only">Toggle Menu</span>
-                </Button>
+            <SidebarTrigger className="md:hidden">
+              <PanelLeft />
+              <span className="sr-only">Toggle Menu</span>
             </SidebarTrigger>
         </div>
       </SidebarHeader>
