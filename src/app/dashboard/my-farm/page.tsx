@@ -15,7 +15,7 @@ export default function MyFarmPage() {
         icon={Sprout}
       />
       <Tabs defaultValue="suggestions" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="suggestions" className="gap-2">
             <Trees className="h-4 w-4" />
             Crop Suggestions
