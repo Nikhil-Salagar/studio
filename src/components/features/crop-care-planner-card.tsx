@@ -1,0 +1,287 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Loader2, ShieldCheck, Upload, Camera } from 'lucide-react';
+import { generateCropCarePlan, type GenerateCropCarePlanOutput } from '@/ai/flows/generate-crop-care-plan';
+import { useToast } from '@/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+
+const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+
+export function CropCarePlannerCard() {
+  const [formData, setFormData] = useState({
+    crop: '',
+    harvestMonths: '',
+  });
+  const [plantationDate, setPlantationDate] = useState<Date | undefined>(new Date());
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [result, setResult] = useState<GenerateCropCarePlanOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>();
+
+
+  useEffect(() => {
+    if (!isCameraOpen) {
+      if (videoRef.current && videoRef.current.srcObject) {
+        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+      return;
+    }
+
+    const getCameraPermission = async () => {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+           throw new Error('Camera not supported');
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        setIsCameraOpen(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings.',
+        });
+      }
+    };
+
+    getCameraPermission();
+  }, [isCameraOpen, toast]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please upload an image smaller than 4MB.",
+        });
+        return;
+      }
+      setPhoto(file);
+      setPhotoPreview(URL.createObjectURL(file));
+      setResult(null);
+    }
+  };
+
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleCapture = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const context = canvas.getContext('2d');
+      if(context){
+        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+            setPhoto(file);
+            setPhotoPreview(URL.createObjectURL(file));
+          }
+        }, 'image/jpeg');
+      }
+      setIsCameraOpen(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+  
+  const isFormValid = () => {
+    return formData.crop && formData.harvestMonths && plantationDate;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid()) return;
+    
+    setIsLoading(true);
+    setResult(null);
+    try {
+      let photoDataUri: string | undefined = undefined;
+      if (photo) {
+        photoDataUri = await fileToDataUri(photo);
+      }
+      const response = await generateCropCarePlan({
+        ...formData,
+        plantationDate: format(plantationDate!, 'yyyy-MM-dd'),
+        harvestMonths: Number(formData.harvestMonths),
+        photoDataUri
+      });
+      setResult(response);
+    } catch (error) {
+      console.error('Error generating crop care plan:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to generate a crop care plan. Please try again.",
+      });
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <Card className="shadow-lg">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="h-6 w-6 text-primary" />
+          <CardTitle className="font-headline text-2xl">Crop Care Planner</CardTitle>
+        </div>
+        <CardDescription>Get a monthly plan for fertilizers, pesticides, and herbicides. Optionally upload a photo for AI analysis.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="crop">Crop</Label>
+              <Input id="crop" placeholder="e.g., Tomato" value={formData.crop} onChange={handleChange} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="plantationDate">Plantation Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !plantationDate && "text-muted-foreground"
+                    )}
+                  >
+                    {plantationDate ? format(plantationDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={plantationDate}
+                    onSelect={setPlantationDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="harvestMonths">Months to Harvest</Label>
+              <Input id="harvestMonths" type="number" placeholder="e.g., 3" value={formData.harvestMonths} onChange={handleChange} required />
+            </div>
+            <div className="space-y-2">
+                <Label>Crop Photo (Optional)</Label>
+                <div className="flex gap-2">
+                    <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} className="hidden"/>
+                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4"/>
+                        {photo ? 'Change' : 'Upload'}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setIsCameraOpen(true)}>
+                        <Camera className="mr-2 h-4 w-4"/>
+                        Open Camera
+                    </Button>
+                </div>
+            </div>
+          </div>
+
+          {photoPreview && (
+            <div className="mt-4 relative w-full max-w-sm h-64 rounded-lg overflow-hidden border">
+              <Image src={photoPreview} alt="Plant preview" layout="fill" objectFit="cover" />
+            </div>
+          )}
+
+          {isCameraOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50 p-4">
+                <Card className="w-full max-w-lg">
+                    <CardHeader>
+                        <CardTitle>Live Camera</CardTitle>
+                        <CardDescription>Position the plant in the frame and capture.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <video ref={videoRef} className="w-full aspect-video rounded-md" autoPlay muted />
+                        {hasCameraPermission === false && (
+                            <Alert variant="destructive" className="mt-4">
+                                <AlertTitle>Camera Access Required</AlertTitle>
+                                <AlertDescription>Please allow camera access to use this feature.</AlertDescription>
+                            </Alert>
+                        )}
+                    </CardContent>
+                    <CardFooter className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsCameraOpen(false)}>Cancel</Button>
+                        <Button onClick={handleCapture} disabled={hasCameraPermission !== true}>Capture Photo</Button>
+                    </CardFooter>
+                </Card>
+            </div>
+           )}
+
+          <Button type="submit" disabled={isLoading || !isFormValid()}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Generate Plan
+          </Button>
+        </form>
+
+        {result && (
+          <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
+            <h3 className="font-headline text-xl text-foreground">Your Crop Care Plan:</h3>
+            {result.photoAnalysis && (
+                <div>
+                    <h4 className="font-semibold text-primary">Photo Analysis</h4>
+                    <p className="whitespace-pre-wrap">{result.photoAnalysis}</p>
+                </div>
+            )}
+            <div className="space-y-4">
+                {result.monthlyPlan.map((monthPlan) => (
+                    <Card key={monthPlan.month}>
+                        <CardHeader>
+                            <CardTitle>Month {monthPlan.month}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <div>
+                                <h5 className="font-semibold">Fertilizer:</h5>
+                                <p>{monthPlan.fertilizer}</p>
+                            </div>
+                             <div>
+                                <h5 className="font-semibold">Herbicide:</h5>
+                                <p>{monthPlan.herbicide}</p>
+                            </div>
+                             <div>
+                                <h5 className="font-semibold">Pesticide:</h5>
+                                <p>{monthPlan.pesticide}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
