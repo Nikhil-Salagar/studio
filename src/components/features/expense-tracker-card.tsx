@@ -82,8 +82,8 @@ export function ExpenseTrackerCard() {
         <CardDescription>Record your daily income and expenses to get an AI-powered financial summary.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleAddTransaction} className="flex flex-wrap items-end gap-4 mb-6 p-4 border rounded-lg">
-          <div className="flex-grow space-y-2 min-w-[200px]">
+        <form onSubmit={handleAddTransaction} className="grid grid-cols-1 md:grid-cols-4 items-end gap-4 mb-6 p-4 border rounded-lg">
+          <div className="md:col-span-2 space-y-2">
             <Label htmlFor="description">Description</Label>
             <Input id="description" placeholder="e.g., Seeds, Crop Sale" value={newTx.description} onChange={(e) => setNewTx({ ...newTx, description: e.target.value })} required />
           </div>
@@ -91,21 +91,23 @@ export function ExpenseTrackerCard() {
             <Label htmlFor="amount">Amount (₹)</Label>
             <Input id="amount" type="number" placeholder="e.g., 500" value={newTx.amount} onChange={(e) => setNewTx({ ...newTx, amount: e.target.value })} required />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select value={newTx.type} onValueChange={(value) => setNewTx({ ...newTx, type: value as 'income' | 'expense' })}>
-              <SelectTrigger id="type" className="w-[120px]">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="expense">Expense</SelectItem>
-                <SelectItem value="income">Income</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-end gap-2">
+            <div className="space-y-2 flex-grow">
+              <Label htmlFor="type">Type</Label>
+              <Select value={newTx.type} onValueChange={(value) => setNewTx({ ...newTx, type: value as 'income' | 'expense' })}>
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" size="icon" aria-label="Add Transaction" className="shrink-0">
+              <PlusCircle className="h-5 w-5"/>
+            </Button>
           </div>
-          <Button type="submit" size="icon" aria-label="Add Transaction">
-            <PlusCircle className="h-5 w-5"/>
-          </Button>
         </form>
 
         <CardTitle className="text-lg font-semibold mb-2">Transactions</CardTitle>
