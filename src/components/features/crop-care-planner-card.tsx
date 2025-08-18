@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, ShieldCheck, Upload, Camera } from 'lucide-react';
+import { Loader2, ShieldCheck, Upload, Camera, SwitchCamera } from 'lucide-react';
 import { generateCropCarePlan, type GenerateCropCarePlanOutput } from '@/ai/flows/generate-crop-care-plan';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,23 +32,17 @@ export function CropCarePlannerCard() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>();
+  const [cameraFacingMode, setCameraFacingMode] = useState<'user' | 'environment'>('environment');
 
 
   useEffect(() => {
-    if (!isCameraOpen) {
-      if (videoRef.current && videoRef.current.srcObject) {
-        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-        videoRef.current.srcObject = null;
-      }
-      return;
-    }
-
+    let stream: MediaStream | null = null;
     const getCameraPermission = async () => {
       try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
            throw new Error('Camera not supported');
         }
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: cameraFacingMode } });
         setHasCameraPermission(true);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -65,8 +59,19 @@ export function CropCarePlannerCard() {
       }
     };
 
-    getCameraPermission();
-  }, [isCameraOpen, toast]);
+    if (isCameraOpen) {
+      getCameraPermission();
+    }
+
+    return () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        if(videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+    }
+  }, [isCameraOpen, cameraFacingMode, toast]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,6 +97,10 @@ export function CropCarePlannerCard() {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+  };
+  
+  const handleToggleCamera = () => {
+    setCameraFacingMode(prevMode => prevMode === 'user' ? 'environment' : 'user');
   };
 
   const handleCapture = () => {
@@ -235,6 +244,10 @@ export function CropCarePlannerCard() {
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2">
                         <Button variant="outline" onClick={() => setIsCameraOpen(false)}>Cancel</Button>
+                        <Button variant="outline" onClick={handleToggleCamera} disabled={hasCameraPermission !== true}>
+                            <SwitchCamera className="mr-2 h-4 w-4" />
+                            Switch
+                        </Button>
                         <Button onClick={handleCapture} disabled={hasCameraPermission !== true}>Capture Photo</Button>
                     </CardFooter>
                 </Card>
