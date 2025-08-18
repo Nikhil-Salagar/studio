@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow to forecast crop profitability.
@@ -20,7 +21,7 @@ export type ForecastProfitabilityInput = z.infer<typeof ForecastProfitabilityInp
 
 const ForecastProfitabilityOutputSchema = z.object({
   expectedYield: z.string().describe("The expected yield of the crop."),
-  expectedProfit: z.string().describe("The expected profit from the crop."),
+  expectedProfit: z.string().describe("The expected profit from the crop in INR (₹)."),
   timeframe: z.string().describe("The expected timeframe to realize the profit."),
   recommendation: z.string().describe("A summary of the profitability forecast.")
 });
@@ -36,6 +37,7 @@ const prompt = ai.definePrompt({
   output: {schema: ForecastProfitabilityOutputSchema},
   prompt: `You are an agricultural economist. Based on the following information, forecast the profitability of planting a crop.
 Consider factors like typical yield, market trends, input costs, and time to harvest.
+The currency for all financial figures must be in Indian Rupees (INR) with the symbol ₹.
 
 Crop: {{{crop}}}
 Acres: {{{acres}}}
