@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -126,7 +127,7 @@ export function ExpenseTrackerCard() {
                             <TableCell>{tx.date}</TableCell>
                             <TableCell className="font-medium">{tx.description}</TableCell>
                             <TableCell className={tx.type === 'income' ? 'text-green-600' : 'text-red-600'}>{tx.type}</TableCell>
-                            <TableCell className="text-right font-mono">{tx.amount.toFixed(2)}</TableCell>
+                            <TableCell className="text-right font-mono">₹{tx.amount.toFixed(2)}</TableCell>
                             <TableCell className="text-right">
                                 <Button variant="ghost" size="icon" onClick={() => handleDeleteTransaction(tx.id)} aria-label="Delete transaction">
                                     <Trash2 className="h-4 w-4 text-destructive"/>
