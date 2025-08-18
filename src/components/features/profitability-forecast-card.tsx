@@ -100,7 +100,7 @@ export function ProfitabilityForecastCard() {
                 </div>
                 <div>
                     <h4 className="font-semibold text-primary">Expected Profit</h4>
-                    <p>{result.expectedProfit}</p>
+                    <p>₹{result.expectedProfit}</p>
                 </div>
                 <div>
                     <h4 className="font-semibold text-primary">Timeframe</h4>
