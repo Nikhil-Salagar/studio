@@ -17,11 +17,7 @@ type Transaction = {
 };
 
 export function ExpenseTrackerCard() {
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { id: 1, type: 'expense', description: 'Seeds', amount: 5000 },
-    { id: 2, type: 'expense', description: 'Fertilizer', amount: 3500 },
-    { id: 3, type: 'income', description: 'Crop Sale', amount: 25000 },
-  ]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
