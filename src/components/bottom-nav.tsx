@@ -3,13 +3,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BarChart3, Sprout, Users, Sparkles } from 'lucide-react';
+import { Home, BarChart3, Sprout, Users, Sparkles, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
   { href: '/dashboard/market', label: 'Market', icon: BarChart3 },
   { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
+  { href: '/dashboard/finance', label: 'Finance', icon: Landmark },
   { href: '/dashboard/community', label: 'Community', icon: Users },
   { href: '/dashboard/ask-ai', label: 'Ask AI', icon: Sparkles },
 ];
