@@ -1,7 +1,5 @@
 import { PageHeader } from '@/components/page-header';
-import { WeatherCard } from '@/components/features/weather-card';
 import { Home, Image } from 'lucide-react';
-import { MarketPriceCard } from '@/components/features/market-price-card';
 import { CropSuggestionCard } from '@/components/features/crop-suggestion-card';
 import { CommunityQaCard } from '@/components/features/community-qa-card';
 import { AskAiCard } from '@/components/features/ask-ai-card';
@@ -31,8 +29,6 @@ export default function DashboardHomePage() {
         <div className="lg:col-span-2">
             <BannerAdPlaceholder/>
         </div>
-        <WeatherCard />
-        <MarketPriceCard />
         <div className="lg:col-span-2">
             <CropSuggestionCard />
         </div>
