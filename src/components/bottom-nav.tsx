@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
   { href: '/dashboard/market', label: 'Market', icon: BarChart3 },
   { href: '/dashboard/finance', label: 'Finance', icon: Landmark },
   { href: '/dashboard/community', label: 'Community', icon: Users },
