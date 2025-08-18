@@ -1,8 +1,7 @@
 import { PageHeader } from '@/components/page-header';
-import { Landmark, IndianRupee, LineChart, MessageCircleQuestion } from 'lucide-react';
+import { Landmark, IndianRupee, MessageCircleQuestion } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExpenseTrackerCard } from '@/components/features/expense-tracker-card';
-import { ProfitabilityForecastCard } from '@/components/features/profitability-forecast-card';
 import { FinancialAssistanceCard } from '@/components/features/financial-assistance-card';
 
 export default function FinancePage() {
@@ -14,14 +13,10 @@ export default function FinancePage() {
         icon={Landmark}
       />
       <Tabs defaultValue="tracker" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="tracker" className="gap-2">
             <IndianRupee className="h-4 w-4" />
             Tracker
-          </TabsTrigger>
-          <TabsTrigger value="forecast" className="gap-2">
-            <LineChart className="h-4 w-4" />
-            Forecast
           </TabsTrigger>
           <TabsTrigger value="assistance" className="gap-2">
             <MessageCircleQuestion className="h-4 w-4" />
@@ -30,9 +25,6 @@ export default function FinancePage() {
         </TabsList>
         <TabsContent value="tracker" className="mt-4">
           <ExpenseTrackerCard />
-        </TabsContent>
-        <TabsContent value="forecast" className="mt-4">
-          <ProfitabilityForecastCard />
         </TabsContent>
         <TabsContent value="assistance" className="mt-4">
           <FinancialAssistanceCard />
