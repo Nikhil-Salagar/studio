@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, TestTube2 } from 'lucide-react';
 import { recommendFertilizerPlan, type RecommendFertilizerPlanOutput } from '@/ai/flows/recommend-fertilizer-plan';
 import { useToast } from '@/hooks/use-toast';
+
+const STORAGE_KEY = 'fertilizerPlanData';
 
 export function FertilizerPlannerCard() {
   const [formData, setFormData] = useState({
@@ -21,7 +23,41 @@ export function FertilizerPlannerCard() {
   });
   const [result, setResult] = useState<RecommendFertilizerPlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        const { formData, result } = JSON.parse(storedData);
+        setFormData(formData || {
+            cropType: '',
+            soilType: '',
+            location: '',
+            season: '',
+            historicalYield: '',
+            farmerExperience: ''
+        });
+        setResult(result || null);
+      }
+    } catch (error) {
+      console.error("Failed to parse fertilizer plan data from localStorage", error);
+    }
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        const dataToStore = JSON.stringify({ formData, result });
+        localStorage.setItem(STORAGE_KEY, dataToStore);
+      } catch (error) {
+          console.error("Failed to save fertilizer plan data to localStorage", error);
+      }
+    }
+  }, [formData, result, isMounted]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -57,6 +93,10 @@ export function FertilizerPlannerCard() {
     }
     setIsLoading(false);
   };
+  
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Card className="shadow-lg">
@@ -84,7 +124,7 @@ export function FertilizerPlannerCard() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="season">Season</Label>
-               <Select onValueChange={handleSelectChange('season')} required>
+               <Select value={formData.season} onValueChange={handleSelectChange('season')} required>
                 <SelectTrigger id="season">
                   <SelectValue placeholder="Select a season" />
                 </SelectTrigger>
@@ -101,7 +141,7 @@ export function FertilizerPlannerCard() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="farmerExperience">Farmer Experience</Label>
-              <Select onValueChange={handleSelectChange('farmerExperience')} required>
+              <Select value={formData.farmerExperience} onValueChange={handleSelectChange('farmerExperience')} required>
                 <SelectTrigger id="farmerExperience">
                   <SelectValue placeholder="Select experience level" />
                 </SelectTrigger>

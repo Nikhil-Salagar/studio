@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,13 +10,44 @@ import { Loader2, Trees } from 'lucide-react';
 import { suggestCrops, type SuggestCropsOutput } from '@/ai/flows/suggest-crops';
 import { useToast } from '@/hooks/use-toast';
 
+const STORAGE_KEY = 'cropSuggestionData';
+
 export function CropSuggestionCard() {
   const [soilType, setSoilType] = useState('');
   const [season, setSeason] = useState('');
   const [location, setLocation] = useState('');
   const [result, setResult] = useState<SuggestCropsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        const { soilType, season, location, result } = JSON.parse(storedData);
+        setSoilType(soilType || '');
+        setSeason(season || '');
+        setLocation(location || '');
+        setResult(result || null);
+      }
+    } catch (error) {
+      console.error("Failed to parse crop suggestion data from localStorage", error);
+    }
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        const dataToStore = JSON.stringify({ soilType, season, location, result });
+        localStorage.setItem(STORAGE_KEY, dataToStore);
+      } catch (error) {
+          console.error("Failed to save crop suggestion data to localStorage", error);
+      }
+    }
+  }, [soilType, season, location, result, isMounted]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +69,10 @@ export function CropSuggestionCard() {
     setIsLoading(false);
   };
 
+  if (!isMounted) {
+    return null; // Or a loading skeleton
+  }
+
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -56,7 +91,7 @@ export function CropSuggestionCard() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="season">Season</Label>
-              <Select onValueChange={setSeason} required>
+              <Select value={season} onValueChange={setSeason} required>
                 <SelectTrigger id="season">
                   <SelectValue placeholder="Select a season" />
                 </SelectTrigger>

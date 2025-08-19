@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+const STORAGE_KEY = 'cropCarePlanData';
 
 export function CropCarePlannerCard() {
   const [formData, setFormData] = useState({
@@ -27,6 +28,7 @@ export function CropCarePlannerCard() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateCropCarePlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -34,6 +36,32 @@ export function CropCarePlannerCard() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>();
   const [cameraFacingMode, setCameraFacingMode] = useState<'user' | 'environment'>('environment');
 
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        const { formData, plantationDate, photoPreview, result } = JSON.parse(storedData);
+        setFormData(formData || { crop: '', harvestMonths: '' });
+        setPlantationDate(plantationDate ? new Date(plantationDate) : new Date());
+        setPhotoPreview(photoPreview || null);
+        setResult(result || null);
+      }
+    } catch (error) {
+      console.error("Failed to parse crop care plan data from localStorage", error);
+    }
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        const dataToStore = JSON.stringify({ formData, plantationDate, photoPreview, result });
+        localStorage.setItem(STORAGE_KEY, dataToStore);
+      } catch (error) {
+        console.error("Failed to save crop care plan data to localStorage", error);
+      }
+    }
+  }, [formData, plantationDate, photoPreview, result, isMounted]);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -85,7 +113,8 @@ export function CropCarePlannerCard() {
         return;
       }
       setPhoto(file);
-      setPhotoPreview(URL.createObjectURL(file));
+      const newPhotoPreview = URL.createObjectURL(file);
+      setPhotoPreview(newPhotoPreview);
       setResult(null);
     }
   };
@@ -141,7 +170,12 @@ export function CropCarePlannerCard() {
       let photoDataUri: string | undefined = undefined;
       if (photo) {
         photoDataUri = await fileToDataUri(photo);
+      } else if (photoPreview) {
+        // If there's a preview but no file, it's likely from localStorage.
+        // We can't re-upload, but the flow can proceed without the image data.
+        // The AI won't do photo analysis in this case, which is acceptable.
       }
+
       const response = await generateCropCarePlan({
         ...formData,
         plantationDate: format(plantationDate!, 'yyyy-MM-dd'),
@@ -159,6 +193,10 @@ export function CropCarePlannerCard() {
     }
     setIsLoading(false);
   };
+  
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Card className="shadow-lg">
@@ -210,7 +248,7 @@ export function CropCarePlannerCard() {
                     <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} className="hidden"/>
                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                         <Upload className="mr-2 h-4 w-4"/>
-                        {photo ? 'Change' : 'Upload'}
+                        {photo || photoPreview ? 'Change' : 'Upload'}
                     </Button>
                     <Button type="button" variant="outline" onClick={() => setIsCameraOpen(true)}>
                         <Camera className="mr-2 h-4 w-4"/>

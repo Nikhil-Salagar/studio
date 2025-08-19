@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,14 +12,43 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '../ui/progress';
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+const STORAGE_KEY = 'plantDiseaseData';
 
 export function PlantDiseaseDetectorCard() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [result, setResult] = useState<DetectPlantDiseaseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        const { photoPreview, result } = JSON.parse(storedData);
+        setPhotoPreview(photoPreview || null);
+        setResult(result || null);
+      }
+    } catch (error) {
+      console.error("Failed to parse plant disease data from localStorage", error);
+    }
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        if (photoPreview || result) {
+            const dataToStore = JSON.stringify({ photoPreview, result });
+            localStorage.setItem(STORAGE_KEY, dataToStore);
+        }
+      } catch (error) {
+          console.error("Failed to save plant disease data to localStorage", error);
+      }
+    }
+  }, [photoPreview, result, isMounted]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,7 +63,7 @@ export function PlantDiseaseDetectorCard() {
       }
       setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
-      setResult(null);
+      setResult(null); // Clear previous results when new photo is selected
     }
   };
 
@@ -67,6 +96,10 @@ export function PlantDiseaseDetectorCard() {
     }
     setIsLoading(false);
   };
+  
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Card className="shadow-lg">
@@ -84,7 +117,7 @@ export function PlantDiseaseDetectorCard() {
             <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} className="hidden"/>
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                 <Upload className="mr-2 h-4 w-4"/>
-                {photo ? 'Change Photo' : 'Upload Photo'}
+                {photo || photoPreview ? 'Change Photo' : 'Upload Photo'}
             </Button>
           </div>
 
