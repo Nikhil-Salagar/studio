@@ -15,10 +15,11 @@ const AdBanner = () => {
   const adRef = useRef<HTMLModElement>(null);
 
   useEffect(() => {
-    // Only push ad if the slot is currently unfilled.
     if (adRef.current && adRef.current.getAttribute('data-ad-status') === 'unfilled') {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
+        // Immediately mark the ad as filled to prevent re-pushes
+        adRef.current.setAttribute('data-ad-status', 'filled');
       } catch (err) {
         console.error('Ad push error:', err);
       }
@@ -41,7 +42,7 @@ const AdBanner = () => {
             data-ad-slot={adSlotId}
             data-ad-format="auto"
             data-full-width-responsive="true"
-            data-ad-status="unfilled" // Custom attribute to track ad status
+            data-ad-status="unfilled" // Start as unfilled
           ></ins>
         </div>
       </CardContent>
