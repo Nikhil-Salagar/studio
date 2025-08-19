@@ -13,17 +13,22 @@ export function AdBanner() {
   const pathname = usePathname();
 
   useEffect(() => {
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error('Ad push error:', err);
+    // Check if the ad container is empty before pushing an ad.
+    // The AdSense script adds child elements to the <ins> tag.
+    if (adRef.current && adRef.current.firstChild?.childNodes.length === 0) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.error('Ad push error:', err);
+      }
     }
   }, [pathname]);
 
   return (
-    <Card ref={adRef} className="w-full h-auto min-h-24 flex justify-center items-center my-4 p-2">
+    <Card className="w-full h-auto min-h-24 flex justify-center items-center my-4 p-2">
       <ins
         key={pathname}
+        ref={adRef}
         className="adsbygoogle"
         style={{ display: 'block', width: '100%' }}
         data-ad-client={AD_CLIENT}
