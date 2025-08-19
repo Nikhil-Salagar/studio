@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,11 +16,36 @@ type Transaction = {
   amount: number;
 };
 
+const STORAGE_KEY = 'transactions';
+
 export function ExpenseTrackerCard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+
+  useEffect(() => {
+    try {
+      const storedTransactions = localStorage.getItem(STORAGE_KEY);
+      if (storedTransactions) {
+        setTransactions(JSON.parse(storedTransactions));
+      }
+    } catch (error) {
+      console.error("Failed to parse transactions from localStorage", error);
+    }
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+      } catch (error) {
+          console.error("Failed to save transactions to localStorage", error);
+      }
+    }
+  }, [transactions, isMounted]);
 
   const handleAddTransaction = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +74,10 @@ export function ExpenseTrackerCard() {
     .reduce((acc, t) => acc + t.amount, 0);
   
   const netBalance = totalIncome - totalExpense;
+
+  if (!isMounted) {
+      return null; // Or a loading skeleton
+  }
 
   return (
     <Card className="shadow-lg">
