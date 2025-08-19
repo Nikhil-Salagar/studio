@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,15 @@ import { AppLogo } from "@/components/app-logo";
 export default function LoginPage() {
   const router = useRouter();
 
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      router.replace('/dashboard');
+    }
+  }, [router]);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    localStorage.setItem('isLoggedIn', 'true');
     router.push('/dashboard');
   };
 
