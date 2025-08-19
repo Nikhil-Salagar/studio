@@ -20,7 +20,6 @@ const AdBanner = () => {
     
     try {
       if (adRef.current && adRef.current.firstChild) {
-        // ad already loaded
         return;
       }
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -31,6 +30,7 @@ const AdBanner = () => {
   }, []);
 
   const publisherId = process.env.NEXT_PUBLIC_ADMOB_PUBLISHER_ID;
+  const adSlotId = "7440904456";
 
   if (!publisherId) {
     return null;
@@ -43,8 +43,8 @@ const AdBanner = () => {
                 <ins
                     className="adsbygoogle"
                     style={{ display: 'block' }}
-                    data-ad-client={`ca-${publisherId}`}
-                    data-ad-slot="7440904456"
+                    data-ad-client={`ca-pub-4466755146994652`}
+                    data-ad-slot={adSlotId}
                     data-ad-format="auto"
                     data-full-width-responsive="true"
                 ></ins>
