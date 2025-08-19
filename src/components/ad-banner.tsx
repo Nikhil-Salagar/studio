@@ -18,14 +18,9 @@ export function AdBanner() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check if the ad container is already filled
-    if (adRef.current && adRef.current.innerHTML === '' && adRef.current.getAttribute('data-ad-status') !== 'filled') {
+    if (adRef.current && adRef.current.innerHTML === '') {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
-        // Mark the ad slot as filled to prevent re-initialization
-        if(adRef.current) {
-            adRef.current.setAttribute('data-ad-status', 'filled');
-        }
       } catch (err) {
         console.error('Ad push error:', err);
       }
@@ -33,15 +28,17 @@ export function AdBanner() {
   }, [pathname]);
 
   return (
-    <div ref={adRef} key={pathname}>
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client={AD_CLIENT}
-        data-ad-slot={AD_SLOT}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      ></ins>
+    <div className="min-h-[100px] w-full flex justify-center items-center bg-muted/50 my-6 rounded-lg">
+        <div ref={adRef} key={pathname} className="w-full h-full">
+            <ins
+                className="adsbygoogle"
+                style={{ display: 'block', width: '100%', height: '100px' }}
+                data-ad-client={AD_CLIENT}
+                data-ad-slot={AD_SLOT}
+                data-ad-format="auto"
+                data-full-width-responsive="true"
+            ></ins>
+        </div>
     </div>
   );
 }
