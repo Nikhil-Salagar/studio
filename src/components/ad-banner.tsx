@@ -27,7 +27,7 @@ const AdBanner = () => {
     }
   }, []);
 
-  const publisherId = "ca-pub-4466755146994652";
+  const publisherId = "4466755146994652";
   const adSlotId = "7440904456";
 
   return (
@@ -38,7 +38,7 @@ const AdBanner = () => {
             ref={adRef}
             className="adsbygoogle"
             style={{ display: 'block' }}
-            data-ad-client={publisherId}
+            data-ad-client={`ca-pub-${publisherId}`}
             data-ad-slot={adSlotId}
             data-ad-format="auto"
             data-full-width-responsive="true"
