@@ -80,7 +80,7 @@ export function ExpenseTrackerCard() {
   }
 
   return (
-    <Card className="shadow-lg">
+    <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
             <IndianRupee className="h-6 w-6 text-primary" />
@@ -98,9 +98,9 @@ export function ExpenseTrackerCard() {
                 <p className="text-sm text-muted-foreground">Total Expenses</p>
                 <p className="text-2xl font-bold text-red-600">₹{totalExpense.toLocaleString()}</p>
             </div>
-             <div className="p-4 bg-blue-100/50 rounded-lg border border-blue-200">
+             <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                 <p className="text-sm text-muted-foreground">Net Balance</p>
-                <p className={`text-2xl font-bold ${netBalance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>₹{netBalance.toLocaleString()}</p>
+                <p className={`text-2xl font-bold ${netBalance >= 0 ? 'text-primary' : 'text-red-600'}`}>₹{netBalance.toLocaleString()}</p>
             </div>
         </div>
 

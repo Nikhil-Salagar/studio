@@ -16,7 +16,6 @@ const navItems = [
 export function BottomNav() {
   const pathname = usePathname();
 
-  // A more flexible approach to finding the active item, especially for nested routes.
   const checkActive = (href: string) => {
     if (href === '/dashboard') {
       return pathname === href;
@@ -28,8 +27,8 @@ export function BottomNav() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
       <div className="mx-auto mb-4 max-w-lg w-full px-4">
-        <div className="bg-card/80 backdrop-blur-lg border border-primary/20 shadow-lg rounded-full">
-            <nav className="flex items-center justify-around p-2">
+        <div className="bg-card/80 backdrop-blur-lg border shadow-xl shadow-black/10 rounded-full">
+            <nav className="flex items-center justify-around p-1.5">
             {navItems.map((item) => {
                 const isActive = checkActive(item.href);
                 return (
@@ -37,12 +36,11 @@ export function BottomNav() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                    'flex flex-col items-center justify-center text-center gap-1 p-2 rounded-full transition-colors duration-200 w-16',
-                    'hover:bg-primary/10 hover:text-primary',
-                    isActive ? 'text-primary' : 'text-muted-foreground'
+                    'flex flex-col items-center justify-center text-center gap-1 p-2 rounded-full transition-colors duration-300 w-16 h-16',
+                    isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted/50'
                     )}
                 >
-                    <item.icon className="h-6 w-6" />
+                    <item.icon className="h-5 w-5" />
                     <span className="text-xs font-medium">{item.label}</span>
                 </Link>
                 );

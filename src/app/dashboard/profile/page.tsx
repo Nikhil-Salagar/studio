@@ -25,7 +25,7 @@ export default function ProfilePage() {
         description="Manage your account details and settings."
         icon={User}
       />
-      <Card className="shadow-lg">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="font-headline text-2xl">Account Information</CardTitle>

@@ -199,7 +199,7 @@ export function CropCarePlannerCard() {
   }
 
   return (
-    <Card className="shadow-lg">
+    <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-6 w-6 text-primary" />

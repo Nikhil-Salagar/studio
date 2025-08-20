@@ -36,7 +36,7 @@ export function AskAiCard() {
   };
 
   return (
-    <Card className="shadow-lg">
+    <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
             <Sparkles className="h-6 w-6 text-primary" />

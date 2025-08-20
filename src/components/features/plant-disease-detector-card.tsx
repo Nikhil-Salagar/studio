@@ -102,7 +102,7 @@ export function PlantDiseaseDetectorCard() {
   }
 
   return (
-    <Card className="shadow-lg">
+    <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
           <Bug className="h-6 w-6 text-primary" />

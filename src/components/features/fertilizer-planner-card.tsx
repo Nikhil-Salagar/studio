@@ -99,7 +99,7 @@ export function FertilizerPlannerCard() {
   }
 
   return (
-    <Card className="shadow-lg">
+    <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
           <TestTube2 className="h-6 w-6 text-primary" />
