@@ -14,14 +14,16 @@ export default function DashboardHomePage() {
         icon={Home}
       />
       
-      <div className="my-6">
-        <AdBanner />
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div className="lg:col-span-2">
             <CropSuggestionCard />
         </div>
+        
+        {/* Ad unit inside the main content area */}
+        <div className="lg:col-span-2">
+            <AdBanner />
+        </div>
+
         <div className="lg:col-span-2">
             <CommunityQaCard />
         </div>
