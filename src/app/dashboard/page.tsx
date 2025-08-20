@@ -3,7 +3,6 @@ import { Home } from 'lucide-react';
 import { CropSuggestionCard } from '@/components/features/crop-suggestion-card';
 import { CommunityQaCard } from '@/components/features/community-qa-card';
 import { AskAiCard } from '@/components/features/ask-ai-card';
-import { AdBanner } from '@/components/ad-banner';
 
 export default function DashboardHomePage() {
   return (
@@ -19,11 +18,6 @@ export default function DashboardHomePage() {
             <CropSuggestionCard />
         </div>
         
-        {/* Ad unit inside the main content area */}
-        <div className="lg:col-span-2">
-            <AdBanner />
-        </div>
-
         <div className="lg:col-span-2">
             <CommunityQaCard />
         </div>
