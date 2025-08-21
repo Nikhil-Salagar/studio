@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: `%s | NS Agri AI`,
   },
   description: 'Empowering farmers with AI-driven insights for crop suggestions, disease detection, fertilizer planning, and financial guidance. Your trusted partner in modern agriculture.',
-  keywords: ['agriculture', 'farming', 'ai farming', 'crop suggestion', 'plant disease detection', 'fertilizer planner', 'agritech', 'smart farming', 'modern agriculture'],
+  keywords: ['NS Agri AI', 'agriculture', 'farming', 'ai farming', 'crop suggestion', 'plant disease detection', 'fertilizer planner', 'agritech', 'smart farming', 'modern agriculture'],
   authors: [{ name: 'NS Agri AI Team' }],
   creator: 'NS Agri AI',
   publisher: 'NS Agri AI',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: 'NS Agri AI | AI-Powered Farming Assistant',
     description: 'Empowering farmers with AI-driven insights for crop suggestions, disease detection, fertilizer planning, and financial guidance.',
     images: ['/twitter-image.png'], // Replace with a path to your Twitter image
-    creator: '@YourTwitterHandle', // Replace with your Twitter handle
+    creator: '@NSAgriAI', // Replace with your Twitter handle
   },
   robots: {
     index: true,
