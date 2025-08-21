@@ -5,8 +5,50 @@ import Script from 'next/script';
 import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
-  title: 'NS Agri AI',
-  description: 'AI-powered assistant for modern agriculture',
+  metadataBase: new URL('https://ns-agri-ai.com'), // Replace with your actual domain
+  title: {
+    default: 'NS Agri AI | AI-Powered Farming Assistant',
+    template: `%s | NS Agri AI`,
+  },
+  description: 'Empowering farmers with AI-driven insights for crop suggestions, disease detection, fertilizer planning, and financial guidance. Your trusted partner in modern agriculture.',
+  keywords: ['agriculture', 'farming', 'ai farming', 'crop suggestion', 'plant disease detection', 'fertilizer planner', 'agritech', 'smart farming', 'modern agriculture'],
+  authors: [{ name: 'NS Agri AI Team' }],
+  creator: 'NS Agri AI',
+  publisher: 'NS Agri AI',
+  openGraph: {
+    title: 'NS Agri AI | AI-Powered Farming Assistant',
+    description: 'Empowering farmers with AI-driven insights for crop suggestions, disease detection, fertilizer planning, and financial guidance.',
+    url: 'https://ns-agri-ai.com', // Replace with your actual domain
+    siteName: 'NS Agri AI',
+    images: [
+      {
+        url: '/og-image.png', // Replace with a path to your OG image
+        width: 1200,
+        height: 630,
+        alt: 'NS Agri AI empowering modern agriculture',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NS Agri AI | AI-Powered Farming Assistant',
+    description: 'Empowering farmers with AI-driven insights for crop suggestions, disease detection, fertilizer planning, and financial guidance.',
+    images: ['/twitter-image.png'], // Replace with a path to your Twitter image
+    creator: '@YourTwitterHandle', // Replace with your Twitter handle
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
