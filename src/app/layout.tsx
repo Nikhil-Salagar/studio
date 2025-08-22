@@ -68,7 +68,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen">
-        <main className="flex-grow">{children}</main>
+        <div className="flex-grow flex flex-col">{children}</div>
         <Footer />
         <Toaster />
       </body>
