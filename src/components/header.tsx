@@ -25,13 +25,13 @@ export function Header() {
                     <AppLogo />
                 </Link>
 
-                <div className="hidden md:flex items-center gap-6">
+                <nav className="hidden md:flex items-center gap-6">
                     {navLinks.map(({ href, label }) => (
                         <Link key={href} href={href} className={cn("text-sm font-medium transition-colors hover:text-primary", pathname.startsWith(href) ? "text-primary" : "text-muted-foreground")}>
                             {label}
                         </Link>
                     ))}
-                </div>
+                </nav>
 
                 <div className="flex items-center gap-2">
                      <Button asChild>
