@@ -59,10 +59,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="google-site-verification" content="1Yl4uy433Wa-iDOR8cQQamYRcTNEG9Do3n4yNxHo6j0" />
-        <meta name="google-adsense-account" content="ca-pub-4466755146994652" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4466755146994652"
      crossOrigin="anonymous"></script>
+        <meta name="google-site-verification" content="1Yl4uy433Wa-iDOR8cQQamYRcTNEG9Do3n4yNxHo6j0" />
+        <meta name="google-adsense-account" content="ca-pub-4466755146994652" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
