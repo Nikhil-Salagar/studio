@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from "react";
@@ -28,13 +27,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-       <div className="mb-8 text-center">
-            <Link href="/blog">
-                <Button variant="outline" size="lg" className="text-lg animate-pulse">
-                    Visit Our Blog <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-            </Link>
-        </div>
       <Card className="w-full max-w-md mx-auto shadow-xl">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
