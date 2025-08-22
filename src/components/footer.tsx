@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-muted/50 border-t mt-auto">
       <div className="container mx-auto py-8 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <AppLogo />
             <p className="text-muted-foreground">
@@ -33,7 +33,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Legal</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Company</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
@@ -45,6 +45,16 @@ export function Footer() {
                   Contact Us
                 </Link>
               </li>
+               <li>
+                <Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors">
+                  Blog
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Legal</h3>
+            <ul className="space-y-2">
               <li>
                 <Link href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
                   Privacy Policy
