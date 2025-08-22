@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
     title: 'Blog | NS Agri AI',
     description: 'Read the latest articles and insights on AI in agriculture, smart farming techniques, and how NS Agri AI is revolutionizing the industry.',
-    keywords: ['NS Agri AI Blog', 'AI in Agriculture', 'Smart Farming', 'AgriTech Insights', 'Farming Technology'],
+    keywords: ['NS Agri AI Blog', 'AI in Agriculture', 'Smart Farming', 'AgriTech Insights', 'Farming Technology', 'Farming', 'Agriculture', 'Agribusiness', 'Sustainable agriculture', 'Precision farming', 'Livestock farming', 'Organic farming', 'Artificial intelligence farming', 'Smart agriculture', 'Agri-tech solutions', 'Crop monitoring with AI', 'AI for disease detection in plants', 'AI-powered irrigation', 'Farm management software AI', 'Agricultural robotics', 'Predictive analytics in agriculture', 'Blockchain in agriculture', 'Autonomous farming'],
 };
 
 export default function BlogIndexPage() {

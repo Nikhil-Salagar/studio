@@ -11,7 +11,9 @@ export const metadata: Metadata = {
     template: `%s | NS Agri AI`,
   },
   description: 'Empowering farmers with AI-driven insights for crop suggestions, disease detection, fertilizer planning, and financial guidance. Your trusted partner in modern agriculture.',
-  keywords: ['NS Agri AI', 'agriculture', 'farming', 'ai farming', 'crop suggestion', 'plant disease detection', 'fertilizer planner', 'agritech', 'smart farming', 'modern agriculture'],
+  keywords: [
+    'NS Agri AI', 'Farming', 'Agriculture', 'Agribusiness', 'Sustainable agriculture', 'Precision farming', 'Livestock farming', 'Organic farming', 'AI in agriculture', 'Artificial intelligence farming', 'Smart agriculture', 'Agri-tech solutions', 'Crop monitoring with AI', 'AI for disease detection in plants', 'AI-powered irrigation', 'Farm management software AI', 'Agricultural robotics', 'Predictive analytics in agriculture', 'Blockchain in agriculture', 'Autonomous farming', 'farming', 'ai farming', 'crop suggestion', 'plant disease detection', 'fertilizer planner', 'agritech', 'smart farming', 'modern agriculture'
+  ],
   authors: [{ name: 'NS Agri AI Team' }],
   creator: 'NS Agri AI',
   publisher: 'NS Agri AI',
