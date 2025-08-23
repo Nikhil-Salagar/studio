@@ -14,6 +14,7 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
+import { getGoogleDriveImageUrl } from '@/lib/utils';
 
 export default function EditPostPage() {
   const router = useRouter();
@@ -49,6 +50,9 @@ export default function EditPostPage() {
     });
     router.push('/dashboard/admin');
   };
+  
+  const displayImage1 = getGoogleDriveImageUrl(image1Url);
+  const displayImage2 = getGoogleDriveImageUrl(image2Url);
 
   return (
     <div>
@@ -90,8 +94,8 @@ export default function EditPostPage() {
             <div className="space-y-4">
                 <Label htmlFor="image1Url">Image 1 URL</Label>
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    {image1Url && image1Url.startsWith('http') ? (
-                        <Image src={image1Url} alt="Article image 1" layout="fill" objectFit="cover" unoptimized/>
+                    {displayImage1 && displayImage1.startsWith('http') ? (
+                        <Image src={displayImage1} alt="Article image 1" layout="fill" objectFit="cover" unoptimized/>
                     ) : (
                         <div className="bg-muted w-full h-full flex items-center justify-center">
                             <span className="text-muted-foreground">No Image</span>
@@ -106,8 +110,8 @@ export default function EditPostPage() {
             <div className="space-y-4">
                 <Label htmlFor="image2Url">Image 2 URL</Label>
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    {image2Url && image2Url.startsWith('http') ? (
-                        <Image src={image2Url} alt="Article image 2" layout="fill" objectFit="cover" unoptimized/>
+                    {displayImage2 && displayImage2.startsWith('http') ? (
+                        <Image src={displayImage2} alt="Article image 2" layout="fill" objectFit="cover" unoptimized/>
                     ) : (
                          <div className="bg-muted w-full h-full flex items-center justify-center">
                             <span className="text-muted-foreground">No Image</span>

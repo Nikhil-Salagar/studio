@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image';
+import { getGoogleDriveImageUrl } from '@/lib/utils';
 
 // This is a placeholder for the actual content.
 // In a real application, you would fetch this from a CMS or a local file.
@@ -495,6 +496,9 @@ export default function BlogPostPage({ params }: PageProps) {
   const paragraphs = content.split('\n\n');
   const midPoint = Math.floor(paragraphs.length / 2);
   const { src1, hint1, src2, hint2, alt } = getImageData(params.slug);
+  
+  const displaySrc1 = getGoogleDriveImageUrl(src1);
+  const displaySrc2 = getGoogleDriveImageUrl(src2);
 
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">
@@ -527,7 +531,7 @@ export default function BlogPostPage({ params }: PageProps) {
                             <div key="img1-wrapper">
                                 {element}
                                 <div className="relative w-full h-80 rounded-lg overflow-hidden border my-8">
-                                    <Image src={src1} alt={alt} layout="fill" objectFit="cover" data-ai-hint={hint1} />
+                                    <Image src={displaySrc1} alt={alt} layout="fill" objectFit="cover" data-ai-hint={hint1} unoptimized />
                                 </div>
                             </div>
                         );
@@ -538,7 +542,7 @@ export default function BlogPostPage({ params }: PageProps) {
                             <div key="img2-wrapper">
                                 {element}
                                 <div className="relative w-full h-80 rounded-lg overflow-hidden border my-8">
-                                    <Image src={src2} alt={alt} layout="fill" objectFit="cover" data-ai-hint={hint2} />
+                                    <Image src={displaySrc2} alt={alt} layout="fill" objectFit="cover" data-ai-hint={hint2} unoptimized />
                                 </div>
                             </div>
                         );
