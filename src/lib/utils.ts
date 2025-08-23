@@ -11,13 +11,14 @@ export function getGoogleDriveImageUrl(url: string): string {
   }
   
   try {
+    // Standard share link format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
     const urlObj = new URL(url);
-    // Standard share link format: /file/d/FILE_ID/view
     const pathParts = urlObj.pathname.split('/');
     const fileIdIndex = pathParts.indexOf('d');
     
     if (fileIdIndex !== -1 && pathParts.length > fileIdIndex + 1) {
       const fileId = pathParts[fileIdIndex + 1];
+      // This is the direct content link format
       return `https://drive.google.com/uc?export=view&id=${fileId}`;
     }
   } catch (error) {
@@ -25,5 +26,6 @@ export function getGoogleDriveImageUrl(url: string): string {
     return url;
   }
 
+  // Return original URL if format is not recognized
   return url;
 }
