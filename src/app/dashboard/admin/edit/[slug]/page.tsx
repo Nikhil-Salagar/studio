@@ -12,8 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { blogPosts } from '@/app/blog/posts';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
+import { getGoogleDriveImageUrl } from '@/lib/utils';
 
 export default function EditPostPage() {
   const router = useRouter();
@@ -24,17 +24,23 @@ export default function EditPostPage() {
 
   const [title, setTitle] = useState(post?.title || '');
   const [description, setDescription] = useState(post?.description || '');
+  const [imageUrl, setImageUrl] = useState(post?.imageUrl || '');
   
   if (!post) {
     notFound();
   }
+  
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const directUrl = getGoogleDriveImageUrl(e.target.value);
+    setImageUrl(directUrl);
+  };
 
   const handleSaveChanges = () => {
     // In a real application, you would make an API call here to save the changes.
-    // For this demo, we'll just show a success message.
     console.log({
         title,
         description,
+        imageUrl,
     });
     toast({
       title: "Changes Saved!",
@@ -60,7 +66,7 @@ export default function EditPostPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">Post Content</CardTitle>
-          <CardDescription>Update the title and description for your blog post.</CardDescription>
+          <CardDescription>Update the details for your blog post.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
@@ -73,26 +79,32 @@ export default function EditPostPage() {
           </div>
           
           <Separator />
-          
-           <div>
-              <h3 className="text-lg font-medium">Article Images</h3>
-              <p className="text-sm text-muted-foreground">Image previews are shown below. Image editing is not currently available.</p>
+
+          <div>
+              <h3 className="text-lg font-medium">Post Image</h3>
+              <p className="text-sm text-muted-foreground">Paste an image URL. Google Drive links will be converted automatically.</p>
            </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-                <Label htmlFor="image1Url">Image 1</Label>
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    <Image src="https://placehold.co/800x400.png" alt="Article image 1 placeholder" layout="fill" objectFit="cover" data-ai-hint="placeholder image"/>
-                </div>
+           <div className="space-y-4">
+                <Label htmlFor="imageUrl">Image URL</Label>
+                <Input 
+                  id="imageUrl" 
+                  value={imageUrl} 
+                  onChange={handleImageUrlChange}
+                  placeholder="https://example.com/image.png or a Google Drive link"
+                />
+                
+                {imageUrl && (
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={imageUrl} 
+                          alt="Image Preview" 
+                          style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                        />
+                    </div>
+                )}
             </div>
-            <div className="space-y-4">
-                <Label htmlFor="image2Url">Image 2</Label>
-                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    <Image src="https://placehold.co/800x400.png" alt="Article image 2 placeholder" layout="fill" objectFit="cover" data-ai-hint="placeholder image"/>
-                </div>
-            </div>
-          </div>
           
           <Separator />
 
