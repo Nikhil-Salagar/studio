@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -18,6 +19,10 @@ export function BottomNav() {
 
   const checkActive = (href: string) => {
     if (href === '/dashboard') {
+      return pathname === href;
+    }
+    // Make admin active only on its page, not children
+    if (href === '/dashboard/admin') {
       return pathname === href;
     }
     return pathname.startsWith(href);
