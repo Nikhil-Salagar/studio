@@ -58,7 +58,7 @@ export default function LoginPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" type="password" required value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
             </div>
             <Button type="submit" className="w-full text-lg py-6">
               Login
