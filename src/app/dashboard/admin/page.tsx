@@ -48,7 +48,9 @@ export default function AdminPage() {
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell className="hidden md:table-cell">{post.description}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm" className="mr-2">Edit</Button>
+                    <Link href={`/dashboard/admin/edit/${post.slug}`}>
+                      <Button variant="outline" size="sm" className="mr-2">Edit</Button>
+                    </Link>
                     <Button variant="destructive" size="sm">Delete</Button>
                   </TableCell>
                 </TableRow>
