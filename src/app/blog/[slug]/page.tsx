@@ -1,11 +1,16 @@
+
+'use client';
+
 import { PageHeader } from '@/components/page-header';
 import { BookText, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { blogPosts, type BlogPost } from '../posts';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import type { Metadata, ResolvingMetadata } from 'next'
+import { useState, useEffect } from 'react';
+import { getGoogleDriveImageUrl } from '@/lib/utils';
+
 
 // This is a placeholder for the actual content.
 // In a real application, you would fetch this from a CMS or a local file.
@@ -311,161 +316,38 @@ By integrating these powerful tools, NS Agri AI provides a seamless, holistic su
     return contentMap[slug] || 'Content not found.';
 };
 
-interface PageProps {
-  params: { slug: string };
-}
+const STORAGE_KEY = 'blogPostsData';
 
-const allKeywords = ['Farming', 'Agriculture', 'Agribusiness', 'Sustainable agriculture', 'Precision farming', 'Livestock farming', 'Organic farming', 'AI in agriculture', 'Artificial intelligence farming', 'Smart agriculture', 'Agri-tech solutions', 'Crop monitoring with AI', 'AI for disease detection in plants', 'AI-powered irrigation', 'Farm management software AI', 'Agricultural robotics', 'Predictive analytics in agriculture', 'Blockchain in agriculture', 'Autonomous farming'];
+export default function BlogPostPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const [post, setPost] = useState<BlogPost | null>(null);
 
-export async function generateMetadata(
-  { params }: PageProps,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const post = blogPosts.find((p) => p.slug === params.slug);
-
-  if (!post) {
-    return {
-      title: 'Not Found',
-      description: 'This page does not exist.',
+  useEffect(() => {
+    if (slug) {
+        try {
+            const storedData = localStorage.getItem(STORAGE_KEY);
+            const allPosts = storedData ? JSON.parse(storedData) : blogPosts;
+            const currentPost = allPosts.find((p: BlogPost) => p.slug === slug);
+            setPost(currentPost || null);
+        } catch (error) {
+            console.error("Failed to parse blog post data from localStorage", error);
+            const staticPost = blogPosts.find(p => p.slug === slug);
+            setPost(staticPost || null);
+        }
     }
-  }
-  
-  const metadataMap: {[key: string]: Metadata} = {
-    'revolutionizing-agriculture-with-ai': {
-        title: 'Revolutionizing Agriculture with AI | NS Agri AI',
-        description: 'Discover how NS Agri AI is using artificial intelligence to transform traditional farming, boost crop yields, and promote sustainable practices.',
-        keywords: ['AI in Agriculture', 'NS Agri AI', 'Smart Farming', 'AgriTech', 'Precision Farming', ...allKeywords],
-        openGraph: { title: 'Revolutionizing Agriculture with AI | NS Agri AI', description: 'Discover how NS Agri AI is using artificial intelligence to transform traditional farming, boost crop yields, and promote sustainable practices.' },
-    },
-    'smart-crop-selection-with-ai': {
-        title: 'AI Crop Selection for Higher Yields | NS Agri AI',
-        description: 'Learn how NS Agri AI\'s smart crop suggestion feature analyzes your soil, location, and season to recommend the most profitable crops.',
-        keywords: ['Crop Selection', 'AI Farming', 'NS Agri AI', 'Data-Driven Agriculture', 'Yield Optimization', ...allKeywords],
-        openGraph: { title: 'AI Crop Selection for Higher Yields | NS Agri AI', description: 'Learn how NS Agri AI\'s smart crop suggestion feature analyzes your soil, location, and season to recommend the most profitable crops.' },
-    },
-    'ai-powered-disease-detection': {
-        title: 'Early Plant Disease Detection with AI | NS Agri AI',
-        description: 'Use your smartphone and NS Agri AI to detect plant diseases early. Get instant diagnosis and treatment plans to save your crops from damage.',
-        keywords: ['Plant Disease Detection', 'AI Diagnostics', 'Crop Health', 'NS Agri AI', 'Mobile Farming', ...allKeywords],
-        openGraph: { title: 'Early Plant Disease Detection with AI | NS Agri AI', description: 'Use your smartphone and NS Agri AI to detect plant diseases early. Get instant diagnosis and treatment plans to save your crops from damage.' },
-    },
-    'fertilizer-planning-made-easy': {
-        title: 'Optimized Fertilizer Plans with AI | NS Agri AI',
-        description: 'Stop guessing your fertilizer needs. See how NS Agri AI creates personalized fertilizer plans to boost growth, save money, and protect the environment.',
-        keywords: ['Fertilizer Planner', 'Nutrient Management', 'Precision Agriculture', 'NS Agri AI', 'Soil Health', ...allKeywords],
-        openGraph: { title: 'Optimized Fertilizer Plans with AI | NS Agri AI', description: 'Stop guessing your fertilizer needs. See how NS Agri AI creates personalized fertilizer plans to boost growth, save money, and protect the environment.' },
-    },
-    'ai-for-sustainable-farming': {
-        title: 'AI for Sustainable Farming Practices | NS Agri AI',
-        description: 'Explore how NS Agri AI promotes sustainable agriculture by optimizing water, fertilizer, and pesticide use for a healthier planet.',
-        keywords: ['Sustainable Agriculture', 'Green Farming', 'Eco-Friendly Farming', 'NS Agri AI', 'AI Technology', ...allKeywords],
-        openGraph: { title: 'AI for Sustainable Farming Practices | NS Agri AI', description: 'Explore how NS Agri AI promotes sustainable agriculture by optimizing water, fertilizer, and pesticide use for a healthier planet.' },
-    },
-    'weather-forecasting-for-farmers': {
-        title: 'AI-Powered Weather Alerts for Farmers | NS Agri AI',
-        description: 'Go beyond standard forecasts. NS Agri AI provides actionable weather insights and alerts to help you protect your crops and manage your farm.',
-        keywords: ['Farm Weather', 'AI Weather Alerts', 'Climate Smart Agriculture', 'NS Agri AI', 'Risk Management', ...allKeywords],
-        openGraph: { title: 'AI-Powered Weather Alerts for Farmers | NS Agri AI', description: 'Go beyond standard forecasts. NS Agri AI provides actionable weather insights and alerts to help you protect your crops and manage your farm.' },
-    },
-    'connecting-farmers-with-ai': {
-        title: 'AI-Powered Community Q&A for Farmers | NS Agri AI',
-        description: 'Learn how the NS Agri AI community feature uses AI to provide instant, expert answers to farming questions in any language, connecting farmers globally.',
-        keywords: ['Farmer Community', 'Agricultural Advice', 'AI Assistant', 'NS Agri AI', 'Knowledge Sharing', ...allKeywords],
-        openGraph: { title: 'AI-Powered Community Q&A for Farmers | NS Agri AI', description: 'Learn how the NS Agri AI community feature uses AI to provide instant, expert answers to farming questions in any language, connecting farmers globally.' },
-    },
-    'the-roi-of-agritech': {
-        title: 'The ROI of AgriTech with NS Agri AI',
-        description: 'An analysis of how investing in NS Agri AI pays off through increased yields, reduced costs, and effective risk management for your farm.',
-        keywords: ['AgriTech ROI', 'Farm Profitability', 'Smart Farming Investment', 'NS Agri AI', 'Cost-Benefit', ...allKeywords],
-        openGraph: { title: 'The ROI of AgriTech with NS Agri AI', description: 'An analysis of how investing in NS Agri AI pays off through increased yields, reduced costs, and effective risk management for your farm.' },
-    },
-    'data-driven-farming-decisions': {
-        title: 'Data-Driven Farming with NS Agri AI',
-        description: 'Move from guesswork to precision. Learn how NS Agri AI uses data to help you make smarter decisions about planting, irrigation, and harvesting.',
-        keywords: ['Data-Driven Farming', 'Precision Agriculture', 'Farm Management', 'NS Agri AI', 'Analytics', ...allKeywords],
-        openGraph: { title: 'Data-Driven Farming with NS Agri AI', description: 'Move from guesswork to precision. Learn how NS Agri AI uses data to help you make smarter decisions about planting, irrigation, and harvesting.' },
-    },
-    'ai-in-water-management': {
-        title: 'Efficient Water Management with AI | NS Agri AI',
-        description: 'Conserve a precious resource. See how NS Agri AI provides intelligent irrigation advice to save water, reduce costs, and improve crop health.',
-        keywords: ['Water Management', 'Smart Irrigation', 'AI Agriculture', 'NS Agri AI', 'Resource Conservation', ...allKeywords],
-        openGraph: { title: 'Efficient Water Management with AI | NS Agri AI', description: 'Conserve a precious resource. See how NS Agri AI provides intelligent irrigation advice to save water, reduce costs, and improve crop health.' },
-    },
-    'market-price-insights-with-ai': {
-        title: 'Get Better Market Prices with AI | NS Agri AI',
-        description: 'Maximize your profits. NS Agri AI analyzes and summarizes mandi prices, giving you the insights needed to sell your produce at the right time and place.',
-        keywords: ['Market Prices', 'Farm Income', 'Agri-Business', 'NS Agri AI', 'Mandi Rates', ...allKeywords],
-        openGraph: { title: 'Get Better Market Prices with AI | NS Agri AI', description: 'Maximize your profits. NS Agri AI analyzes and summarizes mandi prices, giving you the insights needed to sell your produce at the right time and place.' },
-    },
-    'the-role-of-ai-in-soil-health': {
-        title: 'Improving Soil Health with AI | NS Agri AI',
-        description: 'Your farm\'s foundation is its soil. Learn how NS Agri AI provides recommendations to improve soil health, vitality, and long-term productivity.',
-        keywords: ['Soil Health', 'AI Agronomy', 'Sustainable Soil Management', 'NS Agri AI', 'Regenerative Agriculture', ...allKeywords],
-        openGraph: { title: 'Improving Soil Health with AI | NS Agri AI', description: 'Your farm\'s foundation is its soil. Learn how NS Agri AI provides recommendations to improve soil health, vitality, and long-term productivity.' },
-    },
-    'overcoming-farming-challenges-with-ai': {
-        title: 'Overcoming Farming Challenges with AI | NS Agri AI',
-        description: 'From pests to climate change, discover how NS Agri AI provides modern, AI-powered solutions to the timeless challenges faced by farmers.',
-        keywords: ['Farming Challenges', 'AI Solutions', 'Climate Resilience', 'Pest Management', 'NS Agri AI', ...allKeywords],
-        openGraph: { title: 'Overcoming Farming Challenges with AI | NS Agri AI', description: 'From pests to climate change, discover how NS Agri AI provides modern, AI-powered solutions to the timeless challenges faced by farmers.' },
-    },
-    'a-deep-dive-into-ns-agri-ai-features': {
-        title: 'A Deep Dive into NS Agri AI Features',
-        description: 'A complete tour of the core features of NS Agri AI, from crop suggestion and disease detection to financial planning and market analysis.',
-        keywords: ['NS Agri AI Features', 'App Tour', 'Farming App', 'AgriTech Platform', 'AI tools', ...allKeywords],
-        openGraph: { title: 'A Deep Dive into NS Agri AI Features', description: 'A complete tour of the core features of NS Agri AI, from crop suggestion and disease detection to financial planning and market analysis.' },
-    },
-    'getting-started-with-ns-agri-ai': {
-        title: 'Getting Started with NS Agri AI | A Beginner\'s Guide',
-        description: 'Your step-by-step guide to setting up your farm on NS Agri AI and using its key features to make an immediate impact on your operations.',
-        keywords: ['NS Agri AI Guide', 'How to Use Farming App', 'Beginner Farming', 'App Setup', 'First Steps', ...allKeywords],
-        openGraph: { title: 'Getting Started with NS Agri AI | A Beginner\'s Guide', description: 'Your step-by-step guide to setting up your farm on NS Agri AI and using its key features to make an immediate impact on your operations.' },
-    },
-    'the-impact-of-ai-on-small-farms': {
-        title: 'How AI Empowers Small-Scale Farmers | NS Agri AI',
-        description: 'Discover how NS Agri AI levels the playing field, providing small-scale farmers with affordable access to powerful AI tools and expert knowledge.',
-        keywords: ['Small-Scale Farming', 'AI for Smallholders', 'Empowering Farmers', 'NS Agri AI', 'Accessible Tech', ...allKeywords],
-        openGraph: { title: 'How AI Empowers Small-Scale Farmers | NS Agri AI', description: 'Discover how NS Agri AI levels the playing field, providing small-scale farmers with affordable access to powerful AI tools and expert knowledge.' },
-    },
-    'ai-and-pest-management': {
-        title: 'Smarter Pest Management with AI | NS Agri AI',
-        description: 'Learn how NS Agri AI supports Integrated Pest Management (IPM) with rapid identification and targeted treatments to reduce chemical use.',
-        keywords: ['Pest Management', 'IPM', 'AI Pest Control', 'Sustainable Farming', 'NS Agri AI', ...allKeywords],
-        openGraph: { title: 'Smarter Pest Management with AI | NS Agri AI', description: 'Learn how NS Agri AI supports Integrated Pest Management (IPM) with rapid identification and targeted treatments to reduce chemical use.' },
-    },
-    'future-of-farming-in-your-hands': {
-        title: 'The Future of Farming is Here | NS Agri AI',
-        description: 'The AI revolution in agriculture is happening now. See how NS Agri AI is putting the future of farming directly into your hands with precise, data-driven tools.',
-        keywords: ['Future of Farming', 'AgriTech Revolution', 'AI in Agriculture', 'NS Agri AI', 'Farming Innovation', ...allKeywords],
-        openGraph: { title: 'The Future of Farming is Here | NS Agri AI', description: 'The AI revolution in agriculture is happening now. See how NS Agri AI is putting the future of farming directly into your hands with precise, data-driven tools.' },
-    },
-    'financial-planning-for-farmers': {
-        title: 'Smarter Farm Financial Planning with AI | NS Agri AI',
-        description: 'Manage your farm as a business with NS Agri AI. Track expenses and income, and get AI-powered guidance on loans, subsidies, and insurance.',
-        keywords: ['Farm Finance', 'Expense Tracking', 'Agricultural Loans', 'NS Agri AI', 'Farm Profitability', ...allKeywords],
-        openGraph: { title: 'Smarter Farm Financial Planning with AI | NS Agri AI', description: 'Manage your farm as a business with NS Agri AI. Track expenses and income, and get AI-powered guidance on loans, subsidies, and insurance.' },
-    },
-    'from-seed-to-harvest-with-ai': {
-        title: 'The Crop Journey with AI Guidance | NS Agri AI',
-        description: 'Follow a crop from seed to harvest and see how NS Agri AI provides critical, AI-powered guidance and support at every stage of the journey.',
-        keywords: ['Crop Lifecycle', 'Farming Stages', 'Seed to Harvest', 'AI Farming Assistant', 'NS Agri AI', ...allKeywords],
-        openGraph: { title: 'The Crop Journey with AI Guidance | NS Agri AI', description: 'Follow a crop from seed to harvest and see how NS Agri AI provides critical, AI-powered guidance and support at every stage of the journey.' },
-    },
-  };
-  
-  return metadataMap[params.slug] || {};
-}
-
-
-export default function BlogPostPage({ params }: PageProps) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  }, [slug]);
 
   if (!post) {
-    notFound();
+    // This can be a loading state or just return null
+    // until the post is loaded from useEffect
+    // to prevent notFound() from being called prematurely on client-side.
+    return null;
   }
   
-  const content = getArticleContent(params.slug);
+  const content = getArticleContent(slug);
   const paragraphs = content.split('\n\n');
+  const displayImageUrl = post.imageUrl ? getGoogleDriveImageUrl(post.imageUrl) : null;
 
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">
@@ -480,11 +362,10 @@ export default function BlogPostPage({ params }: PageProps) {
       <article className="prose lg:prose-xl dark:prose-invert max-w-full">
          <Card>
             <CardHeader>
-                {post.imageUrl && (
+                {displayImageUrl && (
                     <div className="mb-6 rounded-lg overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
-                            src={post.imageUrl} 
+                            src={displayImageUrl} 
                             alt={post.title} 
                             style={{
                                 maxWidth: '100%',

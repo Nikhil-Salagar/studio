@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,25 +9,55 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { blogPosts } from '@/app/blog/posts';
+import { blogPosts, type BlogPost } from '@/app/blog/posts';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { getGoogleDriveImageUrl } from '@/lib/utils';
 
+const STORAGE_KEY = 'blogPostsData';
+
 export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const { slug } = params;
-  const post = blogPosts.find((p) => p.slug === slug);
   const { toast } = useToast();
+  
+  const [post, setPost] = useState<BlogPost | undefined>(undefined);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
-  const [title, setTitle] = useState(post?.title || '');
-  const [description, setDescription] = useState(post?.description || '');
-  const [imageUrl, setImageUrl] = useState(post?.imageUrl || '');
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      const allPosts = storedData ? JSON.parse(storedData) : blogPosts;
+      const currentPost = allPosts.find((p: BlogPost) => p.slug === slug);
+      
+      if (currentPost) {
+        setPost(currentPost);
+        setTitle(currentPost.title);
+        setDescription(currentPost.description);
+        setImageUrl(currentPost.imageUrl || '');
+      } else {
+        notFound();
+      }
+    } catch (error) {
+      console.error("Failed to parse blog post data from localStorage", error);
+      const staticPost = blogPosts.find(p => p.slug === slug);
+      if (staticPost) {
+        setPost(staticPost);
+        setTitle(staticPost.title);
+        setDescription(staticPost.description);
+        setImageUrl(staticPost.imageUrl || '');
+      } else {
+        notFound();
+      }
+    }
+  }, [slug]);
   
   if (!post) {
-    notFound();
+    return notFound();
   }
   
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,17 +66,32 @@ export default function EditPostPage() {
   };
 
   const handleSaveChanges = () => {
-    // In a real application, you would make an API call here to save the changes.
-    console.log({
-        title,
-        description,
-        imageUrl,
-    });
-    toast({
-      title: "Changes Saved!",
-      description: "Your blog post has been updated (simulation).",
-    });
-    router.push('/dashboard/admin');
+    try {
+        const storedData = localStorage.getItem(STORAGE_KEY);
+        const allPosts = storedData ? JSON.parse(storedData) : blogPosts;
+
+        const updatedPosts = allPosts.map((p: BlogPost) => 
+            p.slug === slug 
+            ? { ...p, title, description, imageUrl }
+            : p
+        );
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPosts));
+
+        toast({
+            title: "Changes Saved!",
+            description: "Your blog post has been updated.",
+        });
+        router.push('/dashboard/admin');
+
+    } catch(error) {
+        console.error("Failed to save changes", error);
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "Could not save your changes. Please try again.",
+        });
+    }
   };
 
   return (

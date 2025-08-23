@@ -1,17 +1,31 @@
+
+'use client';
+
 import { PageHeader } from '@/components/page-header';
 import { BookText } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { blogPosts } from './posts';
-import type { Metadata } from 'next';
+import { blogPosts, type BlogPost } from './posts';
+import { useState, useEffect } from 'react';
 
-export const metadata: Metadata = {
-    title: 'Blog | NS Agri AI',
-    description: 'Read the latest articles and insights on AI in agriculture, smart farming techniques, and how NS Agri AI is revolutionizing the industry.',
-    keywords: ['NS Agri AI Blog', 'AI in Agriculture', 'Smart Farming', 'AgriTech Insights', 'Farming Technology', 'Farming', 'Agriculture', 'Agribusiness', 'Sustainable agriculture', 'Precision farming', 'Livestock farming', 'Organic farming', 'Artificial intelligence farming', 'Smart agriculture', 'Agri-tech solutions', 'Crop monitoring with AI', 'AI for disease detection in plants', 'AI-powered irrigation', 'Farm management software AI', 'Agricultural robotics', 'Predictive analytics in agriculture', 'Blockchain in agriculture', 'Autonomous farming'],
-};
+const STORAGE_KEY = 'blogPostsData';
 
 export default function BlogIndexPage() {
+  const [currentPosts, setCurrentPosts] = useState<BlogPost[]>(blogPosts);
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        setCurrentPosts(JSON.parse(storedData));
+      }
+    } catch (error) {
+      console.error("Failed to parse blog posts from localStorage", error);
+      // Fallback to static data if parsing fails
+      setCurrentPosts(blogPosts);
+    }
+  }, []);
+
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">
       <PageHeader
@@ -20,7 +34,7 @@ export default function BlogIndexPage() {
         icon={BookText}
       />
       <div className="space-y-6">
-        {blogPosts.map((post) => (
+        {currentPosts.map((post) => (
           <Link key={post.slug} href={`/blog/${post.slug}`} className="block hover:no-underline">
             <Card className="hover:border-primary/50 hover:shadow-lg transition-all duration-300">
               <CardHeader>

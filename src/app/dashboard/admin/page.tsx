@@ -1,8 +1,10 @@
 
+'use client';
+
 import { PageHeader } from '@/components/page-header';
 import { Shield, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { blogPosts } from '@/app/blog/posts';
+import { blogPosts, type BlogPost } from '@/app/blog/posts';
 import {
   Table,
   TableBody,
@@ -13,8 +15,28 @@ import {
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+const STORAGE_KEY = 'blogPostsData';
 
 export default function AdminPage() {
+  const [currentPosts, setCurrentPosts] = useState<BlogPost[]>(blogPosts);
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        setCurrentPosts(JSON.parse(storedData));
+      } else {
+        // If nothing in storage, initialize it with default posts
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(blogPosts));
+      }
+    } catch (error) {
+      console.error("Failed to parse blog posts from localStorage", error);
+      setCurrentPosts(blogPosts);
+    }
+  }, []);
+
   return (
     <div>
       <PageHeader
@@ -43,7 +65,7 @@ export default function AdminPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {blogPosts.map((post) => (
+              {currentPosts.map((post) => (
                 <TableRow key={post.slug}>
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell className="hidden md:table-cell">{post.description}</TableCell>
