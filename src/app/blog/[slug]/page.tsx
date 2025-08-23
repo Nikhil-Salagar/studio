@@ -6,6 +6,7 @@ import { blogPosts, type BlogPost } from '../posts';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { Metadata, ResolvingMetadata } from 'next'
+import Image from 'next/image';
 
 // This is a placeholder for the actual content.
 // In a real application, you would fetch this from a CMS or a local file.
@@ -311,6 +312,32 @@ By integrating these powerful tools, NS Agri AI provides a seamless, holistic su
     return contentMap[slug] || 'Content not found.';
 };
 
+const getImageData = (slug: string): { src1: string, hint1: string, src2: string, hint2: string, alt: string } => {
+    const imageData: { [key: string]: { src1: string, hint1: string, src2: string, hint2: string, alt: string } } = {
+        'revolutionizing-agriculture-with-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'ai farming', src2: 'https://placehold.co/800x400.png', hint2: 'digital agriculture', alt: 'AI transforming agriculture' },
+        'smart-crop-selection-with-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'crop selection', src2: 'https://placehold.co/800x400.png', hint2: 'healthy sprouts', alt: 'Smart crop selection' },
+        'ai-powered-disease-detection': { src1: 'https://placehold.co/800x400.png', hint1: 'plant disease', src2: 'https://placehold.co/800x400.png', hint2: 'smartphone farming', alt: 'AI detecting plant disease' },
+        'fertilizer-planning-made-easy': { src1: 'https://placehold.co/800x400.png', hint1: 'fertilizer application', src2: 'https://placehold.co/800x400.png', hint2: 'soil health', alt: 'Fertilizer planning' },
+        'ai-for-sustainable-farming': { src1: 'https://placehold.co/800x400.png', hint1: 'sustainable farm', src2: 'https://placehold.co/800x400.png', hint2: 'green energy', alt: 'Sustainable farming' },
+        'weather-forecasting-for-farmers': { src1: 'https://placehold.co/800x400.png', hint1: 'weather forecast', src2: 'https://placehold.co/800x400.png', hint2: 'storm clouds', alt: 'Weather forecasting for farms' },
+        'connecting-farmers-with-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'community farming', src2: 'https://placehold.co/800x400.png', hint2: 'digital network', alt: 'Farmers connecting through AI' },
+        'the-roi-of-agritech': { src1: 'https://placehold.co/800x400.png', hint1: 'financial chart', src2: 'https://placehold.co/800x400.png', hint2: 'growing investment', alt: 'Return on investment in AgriTech' },
+        'data-driven-farming-decisions': { src1: 'https://placehold.co/800x400.png', hint1: 'data analytics', src2: 'https://placehold.co/800x400.png', hint2: 'farmer tablet', alt: 'Data-driven farming' },
+        'ai-in-water-management': { src1: 'https://placehold.co/800x400.png', hint1: 'drip irrigation', src2: 'https://placehold.co/800x400.png', hint2: 'water conservation', alt: 'AI in water management' },
+        'market-price-insights-with-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'market chart', src2: 'https://placehold.co/800x400.png', hint2: 'local market', alt: 'Market price insights' },
+        'the-role-of-ai-in-soil-health': { src1: 'https://placehold.co/800x400.png', hint1: 'healthy soil', src2: 'https://placehold.co/800x400.png', hint2: 'soil testing', alt: 'AI and soil health' },
+        'overcoming-farming-challenges-with-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'resilient farm', src2: 'https://placehold.co/800x400.png', hint2: 'farmer problem', alt: 'Overcoming farming challenges' },
+        'a-deep-dive-into-ns-agri-ai-features': { src1: 'https://placehold.co/800x400.png', hint1: 'app interface', src2: 'https://placehold.co/800x400.png', hint2: 'feature icons', alt: 'NS Agri AI features' },
+        'getting-started-with-ns-agri-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'mobile app', src2: 'https://placehold.co/800x400.png', hint2: 'farmer using', alt: 'Getting started with NS Agri AI' },
+        'the-impact-of-ai-on-small-farms': { src1: 'https://placehold.co/800x400.png', hint1: 'small farm', src2: 'https://placehold.co/800x400.png', hint2: 'family farming', alt: 'AI impact on small farms' },
+        'ai-and-pest-management': { src1: 'https://placehold.co/800x400.png', hint1: 'pest control', src2: 'https://placehold.co/800x400.png', hint2: 'beneficial insects', alt: 'AI and pest management' },
+        'future-of-farming-in-your-hands': { src1: 'https://placehold.co/800x400.png', hint1: 'futuristic farm', src2: 'https://placehold.co/800x400.png', hint2: 'glowing plant', alt: 'The future of farming' },
+        'financial-planning-for-farmers': { src1: 'https://placehold.co/800x400.png', hint1: 'farm budget', src2: 'https://placehold.co/800x400.png', hint2: 'financial planning', alt: 'Financial planning for farmers' },
+        'from-seed-to-harvest-with-ai': { src1: 'https://placehold.co/800x400.png', hint1: 'seedling growth', src2: 'https://placehold.co/800x400.png', hint2: 'bountiful harvest', alt: 'From seed to harvest with AI' },
+    };
+    return imageData[slug] || { src1: 'https://placehold.co/800x400.png', hint1: 'agriculture technology', src2: 'https://placehold.co/800x400.png', hint2: 'smart farming', alt: 'Modern Agriculture' };
+}
+
 interface PageProps {
   params: { slug: string };
 }
@@ -465,6 +492,9 @@ export default function BlogPostPage({ params }: PageProps) {
   }
   
   const content = getArticleContent(params.slug);
+  const paragraphs = content.split('\n\n');
+  const midPoint = Math.floor(paragraphs.length / 2);
+  const { src1, hint1, src2, hint2, alt } = getImageData(params.slug);
 
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">
@@ -482,11 +512,39 @@ export default function BlogPostPage({ params }: PageProps) {
               <h1 className="font-headline text-4xl font-bold text-primary">{post.title}</h1>
             </CardHeader>
             <CardContent className="text-lg text-foreground/80 leading-relaxed space-y-6">
-                {content.split('\n\n').map((paragraph, index) => {
-                    if (paragraph.startsWith('**')) {
-                        return <h2 key={index} className="font-headline text-2xl font-semibold mt-8 mb-4">{paragraph.replace(/\*\*/g, '')}</h2>
+                {paragraphs.map((paragraph, index) => {
+                    const element = (
+                        <div key={index}>
+                            {paragraph.startsWith('**') 
+                                ? <h2 className="font-headline text-2xl font-semibold mt-8 mb-4">{paragraph.replace(/\*\*/g, '')}</h2>
+                                : <p>{paragraph}</p>
+                            }
+                        </div>
+                    );
+
+                    if (index === 1) {
+                        return (
+                            <div key="img1-wrapper">
+                                {element}
+                                <div className="relative w-full h-80 rounded-lg overflow-hidden border my-8">
+                                    <Image src={src1} alt={alt} layout="fill" objectFit="cover" data-ai-hint={hint1} />
+                                </div>
+                            </div>
+                        );
                     }
-                    return <p key={index}>{paragraph}</p>
+
+                    if (index === midPoint) {
+                         return (
+                            <div key="img2-wrapper">
+                                {element}
+                                <div className="relative w-full h-80 rounded-lg overflow-hidden border my-8">
+                                    <Image src={src2} alt={alt} layout="fill" objectFit="cover" data-ai-hint={hint2} />
+                                </div>
+                            </div>
+                        );
+                    }
+                    
+                    return element;
                 })}
             </CardContent>
           </Card>
