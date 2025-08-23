@@ -31,7 +31,7 @@ export default function AdminPage() {
   
   const [currentPosts, setCurrentPosts] = useState<BlogPost[]>(blogPosts);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [isPromptOpen, setIsPromptOpen] = useState(true);
   const [passwordInput, setPasswordInput] = useState('');
 
   useEffect(() => {
@@ -39,11 +39,14 @@ export default function AdminPage() {
       const authStatus = sessionStorage.getItem(AUTH_KEY);
       if (authStatus === 'true') {
         setIsAuthenticated(true);
+        setIsPromptOpen(false);
       } else {
+        setIsAuthenticated(false);
         setIsPromptOpen(true);
       }
     } catch (error) {
        console.error('Session storage not available.');
+       setIsAuthenticated(false);
        setIsPromptOpen(true);
     }
   }, []);
@@ -90,7 +93,7 @@ export default function AdminPage() {
 
   if (!isAuthenticated) {
     return (
-       <AlertDialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
+       <AlertDialog open={isPromptOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Admin Access Required</AlertDialogTitle>
@@ -115,9 +118,7 @@ export default function AdminPage() {
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancelPrompt}>Cancel</AlertDialogCancel>
-            <AlertDialogAction asChild>
-                <Button onClick={handlePasswordSubmit}>Continue</Button>
-            </AlertDialogAction>
+            <Button onClick={handlePasswordSubmit}>Continue</Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -157,7 +158,7 @@ export default function AdminPage() {
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell className="hidden md:table-cell">{post.description}</TableCell>
                   <TableCell className="text-right">
-                    <Link href={`/dashboard/admin/edit/${post.slug}`}>
+                    <Link href={`/dashboard/edit/${post.slug}`}>
                       <Button variant="outline" size="sm" className="mr-2">Edit</Button>
                     </Link>
                     <Button variant="destructive" size="sm">Delete</Button>
