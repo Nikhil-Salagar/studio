@@ -1,7 +1,5 @@
 import { PageHeader } from '@/components/page-header';
 import { Home } from 'lucide-react';
-import { CropSuggestionCard } from '@/components/features/crop-suggestion-card';
-import { CommunityQaCard } from '@/components/features/community-qa-card';
 import { AskAiCard } from '@/components/features/ask-ai-card';
 
 export default function DashboardHomePage() {
@@ -9,21 +7,12 @@ export default function DashboardHomePage() {
     <div>
       <PageHeader
         title="Welcome, Farmer!"
-        description="Here's a quick overview of your farm's status."
+        description="Get instant answers to your farming questions from our AI assistant."
         icon={Home}
       />
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div className="lg:col-span-2">
-            <CropSuggestionCard />
-        </div>
-        
-        <div className="lg:col-span-2">
-            <CommunityQaCard />
-        </div>
-        <div className="lg:col-span-2">
-            <AskAiCard />
-        </div>
+      <div className="mt-6">
+        <AskAiCard />
       </div>
     </div>
   );
