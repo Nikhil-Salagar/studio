@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -13,6 +14,7 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { getGoogleDriveImageUrl } from '@/lib/utils';
+import Image from 'next/image';
 
 const STORAGE_KEY = 'blogPostsData';
 
@@ -41,7 +43,6 @@ export default function EditPostPage() {
         setImageUrl(currentPost.imageUrl || '');
         setImageUrl2(currentPost.imageUrl2 || '');
       } else {
-        // Fallback for when localStorage is empty or post not found
         const staticPost = blogPosts.find(p => p.slug === slug);
         if (staticPost) {
           setPost(staticPost);
@@ -69,25 +70,23 @@ export default function EditPostPage() {
   }, [slug]);
   
   if (!post) {
-    // Render a loading state or nothing while the effect runs.
     return null;
   }
   
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    const rawUrl = e.target.value;
-    const directUrl = getGoogleDriveImageUrl(rawUrl);
-    setter(directUrl);
-  };
-
   const handleSaveChanges = () => {
     try {
         const storedData = localStorage.getItem(STORAGE_KEY);
-        // Initialize with static data if localStorage is empty
         const allPosts = storedData ? JSON.parse(storedData) : [...blogPosts];
 
         const updatedPosts = allPosts.map((p: BlogPost) => 
             p.slug === slug 
-            ? { ...p, title, description, imageUrl: getGoogleDriveImageUrl(imageUrl), imageUrl2: getGoogleDriveImageUrl(imageUrl2) }
+            ? { 
+                ...p, 
+                title, 
+                description, 
+                imageUrl: getGoogleDriveImageUrl(imageUrl), 
+                imageUrl2: getGoogleDriveImageUrl(imageUrl2) 
+              }
             : p
         );
 
@@ -151,14 +150,13 @@ export default function EditPostPage() {
                   id="imageUrl" 
                   value={imageUrl} 
                   onChange={(e) => setImageUrl(e.target.value)}
-                  onBlur={(e) => handleImageUrlChange(e, setImageUrl)}
                   placeholder="https://example.com/image.png or a Google Drive link"
                 />
                 
                 {imageUrl && (
                     <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
                         <img 
-                          src={imageUrl} 
+                          src={getGoogleDriveImageUrl(imageUrl)} 
                           alt="Image Preview 1" 
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -173,14 +171,13 @@ export default function EditPostPage() {
                   id="imageUrl2" 
                   value={imageUrl2} 
                   onChange={(e) => setImageUrl2(e.target.value)}
-                  onBlur={(e) => handleImageUrlChange(e, setImageUrl2)}
                   placeholder="https://example.com/image.png or a Google Drive link"
                 />
                 
                 {imageUrl2 && (
                     <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
                         <img 
-                          src={imageUrl2} 
+                          src={getGoogleDriveImageUrl(imageUrl2)} 
                           alt="Image Preview 2" 
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           onError={(e) => (e.currentTarget.style.display = 'none')}

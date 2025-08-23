@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { getGoogleDriveImageUrl } from '@/lib/utils';
-
+import Image from 'next/image';
 
 // This is a placeholder for the actual content.
 // In a real application, you would fetch this from a CMS or a local file.
@@ -193,7 +193,7 @@ NS Agri AI is more than just a single-function app; it is a comprehensive, integ
 
 **5. Market Prices:** Maximize your profits with this powerful tool. The AI scrapes pricing data from various government and public sources to give you a real-time overview of market prices for your crops. You can quickly see the average price, the price range, and which local markets (mandis) are currently offering the best rates, putting you in control during negotiations.
 
-**6. Community Q&A:** Have a question? Get an expert answer instantly. Ask anything in your native language, from "What's the best way to irrigate my fields?" to "How do I apply for a government subsidy?" The AI provides a detailed, reliable answer, drawing from a vast knowledge base of agricultural best practices.
+**6. Community Q&A:** Have a question? Get an expert answer instantly. Ask anything in your native language, from "What's the best way to irrigate my fields?" to "How do I apply for a government subsidy?" The AI provides a detailed, reliable answer, a vast knowledge base of agricultural best practices.
 
 **7. Financial Tools:** The app also includes practical tools to manage the business side of farming. The Expense Tracker helps you log income and expenses to understand your farm's profitability, while the Financial Assistant can provide AI-powered guidance on navigating government schemes, loans, and crop insurance.
 
@@ -339,9 +339,6 @@ export default function BlogPostPage() {
   }, [slug]);
 
   if (!post) {
-    // This can be a loading state or just return null
-    // until the post is loaded from useEffect
-    // to prevent notFound() from being called prematurely on client-side.
     return null;
   }
   
