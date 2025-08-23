@@ -2,7 +2,7 @@
 'use client';
 
 import { PageHeader } from '@/components/page-header';
-import { Shield, PlusCircle } from 'lucide-react';
+import { Shield, PlusCircle, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { blogPosts, type BlogPost } from '@/app/blog/posts';
 import {
@@ -16,26 +16,113 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const STORAGE_KEY = 'blogPostsData';
+const ADMIN_PASSWORD = 'Salagar@123';
+const AUTH_KEY = 'isAdminAuthenticated';
 
 export default function AdminPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  
   const [currentPosts, setCurrentPosts] = useState<BlogPost[]>(blogPosts);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
 
   useEffect(() => {
+    try {
+      const authStatus = sessionStorage.getItem(AUTH_KEY);
+      if (authStatus === 'true') {
+        setIsAuthenticated(true);
+      } else {
+        setIsPromptOpen(true);
+      }
+    } catch (error) {
+       console.error('Session storage not available.');
+       setIsPromptOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     try {
       const storedData = localStorage.getItem(STORAGE_KEY);
       if (storedData) {
         setCurrentPosts(JSON.parse(storedData));
       } else {
-        // If nothing in storage, initialize it with default posts
         localStorage.setItem(STORAGE_KEY, JSON.stringify(blogPosts));
       }
     } catch (error) {
       console.error("Failed to parse blog posts from localStorage", error);
       setCurrentPosts(blogPosts);
     }
-  }, []);
+  }, [isAuthenticated]);
+  
+  const handlePasswordSubmit = () => {
+    if (passwordInput === ADMIN_PASSWORD) {
+      try {
+        sessionStorage.setItem(AUTH_KEY, 'true');
+      } catch (error) {
+        console.error('Session storage not available.');
+      }
+      setIsAuthenticated(true);
+      setIsPromptOpen(false);
+      setPasswordInput('');
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Incorrect Password',
+        description: 'Please try again.',
+      });
+      setPasswordInput('');
+    }
+  };
+
+  const handleCancelPrompt = () => {
+      setIsPromptOpen(false);
+      router.back();
+  }
+
+  if (!isAuthenticated) {
+    return (
+       <AlertDialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Admin Access Required</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please enter the password to access the admin panel.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-2">
+            <Input 
+              id="password"
+              type="password"
+              placeholder="Enter password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handlePasswordSubmit();
+                }
+              }}
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelPrompt}>Cancel</AlertDialogCancel>
+            <AlertDialogAction asChild>
+                <Button onClick={handlePasswordSubmit}>Continue</Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
 
   return (
     <div>
