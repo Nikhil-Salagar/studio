@@ -1,3 +1,4 @@
+
 "use client";
 
 import { PageHeader } from '@/components/page-header';
@@ -12,11 +13,6 @@ import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const router = useRouter();
-
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    router.push('/');
-  };
   
   return (
     <div>
@@ -26,15 +22,11 @@ export default function ProfilePage() {
         icon={User}
       />
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
             <div>
                 <CardTitle className="font-headline text-2xl">Account Information</CardTitle>
                 <CardDescription>View and edit your personal information.</CardDescription>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4"/>
-                Logout
-            </Button>
         </CardHeader>
         <CardContent className="space-y-6">
             <div className="flex items-center space-x-4">
