@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
-import { ArrowLeft, Edit, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, Edit } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,6 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
-import { getGoogleDriveImageUrl } from '@/lib/utils';
 
 export default function EditPostPage() {
   const router = useRouter();
@@ -26,11 +25,6 @@ export default function EditPostPage() {
   const [title, setTitle] = useState(post?.title || '');
   const [description, setDescription] = useState(post?.description || '');
   
-  // In a real app, these would come from the post data
-  const [image1Url, setImage1Url] = useState('https://placehold.co/800x400.png');
-  const [image2Url, setImage2Url] = useState('https://placehold.co/800x400.png');
-
-
   if (!post) {
     notFound();
   }
@@ -41,8 +35,6 @@ export default function EditPostPage() {
     console.log({
         title,
         description,
-        image1Url,
-        image2Url,
     });
     toast({
       title: "Changes Saved!",
@@ -50,9 +42,6 @@ export default function EditPostPage() {
     });
     router.push('/dashboard/admin');
   };
-  
-  const displayImage1 = getGoogleDriveImageUrl(image1Url);
-  const displayImage2 = getGoogleDriveImageUrl(image2Url);
 
   return (
     <div>
@@ -87,40 +76,20 @@ export default function EditPostPage() {
           
            <div>
               <h3 className="text-lg font-medium">Article Images</h3>
-              <p className="text-sm text-muted-foreground">Update image URLs from Google Drive or another cloud source.</p>
+              <p className="text-sm text-muted-foreground">Image previews are shown below. Image editing is not currently available.</p>
            </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-                <Label htmlFor="image1Url">Image 1 URL</Label>
+                <Label htmlFor="image1Url">Image 1</Label>
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    {displayImage1 && displayImage1.startsWith('http') ? (
-                        <Image src={displayImage1} alt="Article image 1" layout="fill" objectFit="cover" unoptimized/>
-                    ) : (
-                        <div className="bg-muted w-full h-full flex items-center justify-center">
-                            <span className="text-muted-foreground">No Image</span>
-                        </div>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4 text-muted-foreground" />
-                    <Input id="image1Url" placeholder="Paste direct image URL" value={image1Url} onChange={(e) => setImage1Url(e.target.value)} />
+                    <Image src="https://placehold.co/800x400.png" alt="Article image 1 placeholder" layout="fill" objectFit="cover" data-ai-hint="placeholder image"/>
                 </div>
             </div>
             <div className="space-y-4">
-                <Label htmlFor="image2Url">Image 2 URL</Label>
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    {displayImage2 && displayImage2.startsWith('http') ? (
-                        <Image src={displayImage2} alt="Article image 2" layout="fill" objectFit="cover" unoptimized/>
-                    ) : (
-                         <div className="bg-muted w-full h-full flex items-center justify-center">
-                            <span className="text-muted-foreground">No Image</span>
-                        </div>
-                    )}
-                </div>
-                 <div className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4 text-muted-foreground" />
-                    <Input id="image2Url" placeholder="Paste direct image URL" value={image2Url} onChange={(e) => setImage2Url(e.target.value)} />
+                <Label htmlFor="image2Url">Image 2</Label>
+                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                    <Image src="https://placehold.co/800x400.png" alt="Article image 2 placeholder" layout="fill" objectFit="cover" data-ai-hint="placeholder image"/>
                 </div>
             </div>
           </div>
