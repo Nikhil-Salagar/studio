@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Sprout, Users, Sparkles, Landmark } from 'lucide-react';
+import { Home, Sprout, Users, Landmark, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
   { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
   { href: '/dashboard/community', label: 'Community', icon: Users },
   { href: '/dashboard/finance', label: 'Finance', icon: Landmark },
-  { href: '/dashboard/ask-ai', label: 'Ask AI', icon: Sparkles },
+  { href: '/dashboard/admin', label: 'Admin', icon: Shield },
 ];
 
 export function BottomNav() {
