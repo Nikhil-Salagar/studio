@@ -90,7 +90,7 @@ export default function EditPostPage() {
             <div className="space-y-4">
                 <Label htmlFor="image1Url">Image 1 URL</Label>
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    {image1Url ? (
+                    {image1Url && image1Url.startsWith('http') ? (
                         <Image src={image1Url} alt="Article image 1" layout="fill" objectFit="cover" unoptimized/>
                     ) : (
                         <div className="bg-muted w-full h-full flex items-center justify-center">
@@ -106,7 +106,7 @@ export default function EditPostPage() {
             <div className="space-y-4">
                 <Label htmlFor="image2Url">Image 2 URL</Label>
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                    {image2Url ? (
+                    {image2Url && image2Url.startsWith('http') ? (
                         <Image src={image2Url} alt="Article image 2" layout="fill" objectFit="cover" unoptimized/>
                     ) : (
                          <div className="bg-muted w-full h-full flex items-center justify-center">
