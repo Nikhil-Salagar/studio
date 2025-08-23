@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from '@/components/page-header';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -63,6 +64,21 @@ export default function ProfilePage() {
                 </div>
                 <Button>Save Changes</Button>
             </form>
+
+            <Separator/>
+            
+            <div className="space-y-4">
+                <div>
+                    <h3 className="text-lg font-semibold">Admin Section</h3>
+                    <p className="text-sm text-muted-foreground mb-2">Manage application content and settings.</p>
+                    <Link href="/dashboard/admin">
+                        <Button variant="secondary">
+                           <Shield className="mr-2 h-4 w-4"/>
+                           Go to Admin Panel
+                        </Button>
+                    </Link>
+                </div>
+            </div>
 
             <Separator/>
 
