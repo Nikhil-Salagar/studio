@@ -84,8 +84,8 @@ export default function EditPostPage() {
                 ...p, 
                 title, 
                 description, 
-                imageUrl: getGoogleDriveImageUrl(imageUrl), 
-                imageUrl2: getGoogleDriveImageUrl(imageUrl2) 
+                imageUrl: imageUrl, 
+                imageUrl2: imageUrl2 
               }
             : p
         );
@@ -150,13 +150,14 @@ export default function EditPostPage() {
                   id="imageUrl" 
                   value={imageUrl} 
                   onChange={(e) => setImageUrl(e.target.value)}
+                  onBlur={(e) => setImageUrl(getGoogleDriveImageUrl(e.target.value))}
                   placeholder="https://example.com/image.png or a Google Drive link"
                 />
                 
                 {imageUrl && (
                     <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
                         <img 
-                          src={getGoogleDriveImageUrl(imageUrl)} 
+                          src={imageUrl} 
                           alt="Image Preview 1" 
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -171,13 +172,14 @@ export default function EditPostPage() {
                   id="imageUrl2" 
                   value={imageUrl2} 
                   onChange={(e) => setImageUrl2(e.target.value)}
+                  onBlur={(e) => setImageUrl2(getGoogleDriveImageUrl(e.target.value))}
                   placeholder="https://example.com/image.png or a Google Drive link"
                 />
                 
                 {imageUrl2 && (
                     <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
                         <img 
-                          src={getGoogleDriveImageUrl(imageUrl2)} 
+                          src={imageUrl2} 
                           alt="Image Preview 2" 
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           onError={(e) => (e.currentTarget.style.display = 'none')}

@@ -27,6 +27,7 @@ export default function EditPostPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl2, setImageUrl2] = useState('');
 
   useEffect(() => {
     try {
@@ -39,14 +40,15 @@ export default function EditPostPage() {
         setTitle(currentPost.title);
         setDescription(currentPost.description);
         setImageUrl(currentPost.imageUrl || '');
+        setImageUrl2(currentPost.imageUrl2 || '');
       } else {
-        // Fallback for when localStorage is empty or post not found
         const staticPost = blogPosts.find(p => p.slug === slug);
         if (staticPost) {
           setPost(staticPost);
           setTitle(staticPost.title);
           setDescription(staticPost.description);
           setImageUrl(staticPost.imageUrl || '');
+          setImageUrl2(staticPost.imageUrl2 || '');
         } else {
           notFound();
         }
@@ -59,6 +61,7 @@ export default function EditPostPage() {
         setTitle(staticPost.title);
         setDescription(staticPost.description);
         setImageUrl(staticPost.imageUrl || '');
+        setImageUrl2(staticPost.imageUrl2 || '');
       } else {
         notFound();
       }
@@ -66,25 +69,23 @@ export default function EditPostPage() {
   }, [slug]);
   
   if (!post) {
-    // Render a loading state or nothing while the effect runs.
     return null;
   }
   
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawUrl = e.target.value;
-    const directUrl = getGoogleDriveImageUrl(rawUrl);
-    setImageUrl(directUrl);
-  };
-
   const handleSaveChanges = () => {
     try {
         const storedData = localStorage.getItem(STORAGE_KEY);
-        // Initialize with static data if localStorage is empty
         const allPosts = storedData ? JSON.parse(storedData) : [...blogPosts];
 
         const updatedPosts = allPosts.map((p: BlogPost) => 
             p.slug === slug 
-            ? { ...p, title, description, imageUrl: getGoogleDriveImageUrl(imageUrl) }
+            ? { 
+                ...p, 
+                title, 
+                description, 
+                imageUrl: imageUrl, 
+                imageUrl2: imageUrl2 
+              }
             : p
         );
 
@@ -138,26 +139,47 @@ export default function EditPostPage() {
           <Separator />
 
           <div>
-              <h3 className="text-lg font-medium">Post Image</h3>
-              <p className="text-sm text-muted-foreground">Paste an image URL. Google Drive links will be converted automatically.</p>
+              <h3 className="text-lg font-medium">Post Images</h3>
+              <p className="text-sm text-muted-foreground">Paste image URLs. Google Drive links will be converted automatically.</p>
            </div>
           
            <div className="space-y-4">
-                <Label htmlFor="imageUrl">Image URL</Label>
+                <Label htmlFor="imageUrl">Image URL 1 (Main Image)</Label>
                 <Input 
                   id="imageUrl" 
                   value={imageUrl} 
                   onChange={(e) => setImageUrl(e.target.value)}
-                  onBlur={handleImageUrlChange}
+                  onBlur={(e) => setImageUrl(getGoogleDriveImageUrl(e.target.value))}
                   placeholder="https://example.com/image.png or a Google Drive link"
                 />
                 
                 {imageUrl && (
                     <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
                           src={imageUrl} 
-                          alt="Image Preview" 
+                          alt="Image Preview 1" 
+                          style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
+                        />
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-4">
+                <Label htmlFor="imageUrl2">Image URL 2 (Body Image)</Label>
+                <Input 
+                  id="imageUrl2" 
+                  value={imageUrl2} 
+                  onChange={(e) => setImageUrl2(e.target.value)}
+                  onBlur={(e) => setImageUrl2(getGoogleDriveImageUrl(e.target.value))}
+                  placeholder="https://example.com/image.png or a Google Drive link"
+                />
+                
+                {imageUrl2 && (
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden border bg-muted">
+                        <img 
+                          src={imageUrl2} 
+                          alt="Image Preview 2" 
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           onError={(e) => (e.currentTarget.style.display = 'none')}
                         />
