@@ -348,6 +348,8 @@ export default function BlogPostPage() {
   const content = getArticleContent(slug);
   const paragraphs = content.split('\n\n');
   const displayImageUrl = post.imageUrl ? getGoogleDriveImageUrl(post.imageUrl) : null;
+  const displayImageUrl2 = post.imageUrl2 ? getGoogleDriveImageUrl(post.imageUrl2) : null;
+  const midPoint = Math.floor(paragraphs.length / 2);
 
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">
@@ -386,6 +388,21 @@ export default function BlogPostPage() {
                             ? <h2 className="font-headline text-2xl font-semibold mt-8 mb-4">{paragraph.replace(/\*\*/g, '')}</h2>
                             : <p>{paragraph}</p>
                         }
+                        {index === midPoint && displayImageUrl2 && (
+                             <div className="my-8 rounded-lg overflow-hidden">
+                                <img 
+                                    src={displayImageUrl2} 
+                                    alt={post.title} 
+                                    style={{
+                                        maxWidth: '100%',
+                                        height: 'auto',
+                                        borderRadius: '10px',
+                                        aspectRatio: '16/9',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
                 ))}
             </CardContent>
