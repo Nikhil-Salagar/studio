@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,6 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-
-  useEffect(() => {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      router.replace('/dashboard');
-    }
-  }, [router]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
