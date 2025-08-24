@@ -138,10 +138,12 @@ export default function AdminPage() {
             <CardTitle className="font-headline text-2xl">Blog Posts</CardTitle>
             <CardDescription>A list of all the articles on your site.</CardDescription>
           </div>
-           <Button>
-                <PlusCircle className="mr-2 h-4 w-4"/>
-                Create New Post
-            </Button>
+           <Link href="/dashboard/admin/create">
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4"/>
+                    Create New Post
+                </Button>
+           </Link>
         </CardHeader>
         <CardContent>
           <Table>
