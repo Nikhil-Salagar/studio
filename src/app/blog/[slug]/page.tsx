@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { getGoogleDriveImageUrl } from '@/lib/utils';
 import Image from 'next/image';
+import { useLanguage } from '@/lib/i18n';
 
 // This is a placeholder for the actual content.
 // In a real application, you would fetch this from a CMS or a local file.
@@ -239,7 +240,7 @@ One of the biggest impacts is the democratization of expert knowledge. A small f
 
 Another key area is resource optimization. Small-scale farmers operate on thin margins, and every bit of input—be it water, fertilizer, or seeds—counts. Wasting these resources is not just inefficient; it's a direct hit to their livelihood. The precision agriculture tools within NS Agri AI are perfectly suited to address this. The Fertilizer Planner helps them apply the exact amount of nutrients needed, reducing their expenditure on expensive inputs. AI-driven advice on irrigation helps them conserve water, which is often a significant cost. By making their operations more efficient, the app directly improves their profitability.
 
-NS Agri AI also enhances market access, a major challenge for small farmers. They often have to sell to the first available middleman, with little visibility into fair market prices. The Market Prices feature gives them the power of information. By seeing real-time prices in different local markets, they can choose where to sell their produce to get the best return. This simple, transparent data puts them in a much stronger negotiating position and helps them capture more of the value they create.
+NS Agri AI also enhances market access, a major challenge for small farmers. They often have to sell to the first available middleman, with little visibility into fair market prices. The Market Prices feature gives them the power of information. By seeing real-time prices in different local markets, they can choose where to sell their produce to get the best return. This simple, transparent data puts them in a much stronger negotiating position.
 
 Furthermore, the technology is inherently scalable. The advice is tailored to the individual farm, whether it's one acre or one hundred. The disease detector works on a single plant, and the crop suggestions work for a small plot. This personal, scalable approach is what makes it so effective for smallholders.
 
@@ -322,6 +323,7 @@ export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [post, setPost] = useState<BlogPost | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (slug) {
@@ -354,7 +356,7 @@ export default function BlogPostPage() {
         <Link href="/blog">
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
+            {t('common.backToBlog')}
           </Button>
         </Link>
       </div>

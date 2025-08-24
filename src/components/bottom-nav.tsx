@@ -2,25 +2,22 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Home, Sprout, Users, Landmark, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
-import { Input } from './ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from './ui/button';
-
-const navItems = [
-  { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/dashboard/my-farm', label: 'My Farm', icon: Sprout },
-  { href: '/dashboard/community', label: 'Community', icon: Users },
-  { href: '/dashboard/finance', label: 'Finance', icon: Landmark },
-  { href: '/dashboard/admin', label: 'Admin', icon: Shield },
-];
+import { useLanguage } from '@/lib/i18n';
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const navItems = [
+    { href: '/dashboard', label: t('bottomNav.home'), icon: Home },
+    { href: '/dashboard/my-farm', label: t('bottomNav.myFarm'), icon: Sprout },
+    { href: '/dashboard/community', label: t('bottomNav.community'), icon: Users },
+    { href: '/dashboard/finance', label: t('bottomNav.finance'), icon: Landmark },
+    { href: '/dashboard/admin', label: t('bottomNav.admin'), icon: Shield },
+  ];
 
   const checkActive = (href: string) => {
     if (href === '/dashboard') {
@@ -30,7 +27,7 @@ export function BottomNav() {
     if (href === '/dashboard/admin') {
       return pathname.startsWith(href);
     }
-    return pathname.startsWith(href);
+    return pathname.startsWith(href) && href !== '/dashboard';
   };
   
   return (

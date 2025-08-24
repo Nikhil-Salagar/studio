@@ -8,15 +8,17 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-const navLinks = [
-    { href: "/about", label: "About" },
-    { href: "/blog", label: "Blog" },
-    { href: "/contact", label: "Contact" },
-];
+import { useLanguage } from "@/lib/i18n";
 
 export function Header() {
     const pathname = usePathname();
+    const { t } = useLanguage();
+
+    const navLinks = [
+        { href: "/about", label: t('header.about') },
+        { href: "/blog", label: t('header.blog') },
+        { href: "/contact", label: t('header.contact') },
+    ];
 
     return (
         <header className="bg-background/80 backdrop-blur-lg sticky top-0 z-40 border-b">
@@ -35,7 +37,7 @@ export function Header() {
 
                 <div className="flex items-center gap-2">
                      <Button asChild>
-                        <Link href="/">Login</Link>
+                        <Link href="/">{t('common.login')}</Link>
                     </Button>
                     <Sheet>
                         <SheetTrigger asChild>

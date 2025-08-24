@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -10,11 +11,13 @@ import { Loader2, Bug, Upload } from 'lucide-react';
 import { detectPlantDisease, type DetectPlantDiseaseOutput } from '@/ai/flows/detect-plant-disease';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '../ui/progress';
+import { useLanguage } from '@/lib/i18n';
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const STORAGE_KEY = 'plantDiseaseData';
 
 export function PlantDiseaseDetectorCard() {
+  const { t } = useLanguage();
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [result, setResult] = useState<DetectPlantDiseaseOutput | null>(null);
@@ -106,18 +109,18 @@ export function PlantDiseaseDetectorCard() {
       <CardHeader>
         <div className="flex items-center gap-3">
           <Bug className="h-6 w-6 text-primary" />
-          <CardTitle className="font-headline text-2xl">Plant Disease Detector</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t('plantDiseaseDetectorCard.title')}</CardTitle>
         </div>
-        <CardDescription>Upload a photo of a plant to detect diseases and get treatment recommendations.</CardDescription>
+        <CardDescription>{t('plantDiseaseDetectorCard.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="photo">Plant Photo</Label>
+            <Label htmlFor="photo">{t('plantDiseaseDetectorCard.plantPhoto')}</Label>
             <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} className="hidden"/>
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                 <Upload className="mr-2 h-4 w-4"/>
-                {photo || photoPreview ? 'Change Photo' : 'Upload Photo'}
+                {photo || photoPreview ? t('plantDiseaseDetectorCard.changeButton') : t('plantDiseaseDetectorCard.uploadButton')}
             </Button>
           </div>
 
@@ -129,26 +132,26 @@ export function PlantDiseaseDetectorCard() {
 
           <Button type="submit" disabled={isLoading || !photo}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Analyze Photo
+            {t('plantDiseaseDetectorCard.buttonText')}
           </Button>
         </form>
 
         {result && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
-            <h3 className="font-headline text-xl text-foreground">Analysis Result:</h3>
+            <h3 className="font-headline text-xl text-foreground">{t('plantDiseaseDetectorCard.resultsTitle')}</h3>
             <div>
-              <h4 className="font-semibold text-primary">Detected Disease/Pest</h4>
+              <h4 className="font-semibold text-primary">{t('plantDiseaseDetectorCard.resultDisease')}</h4>
               <p>{result.disease}</p>
             </div>
             <div>
-              <h4 className="font-semibold text-primary">Confidence</h4>
+              <h4 className="font-semibold text-primary">{t('plantDiseaseDetectorCard.resultConfidence')}</h4>
               <div className="flex items-center gap-2">
                 <Progress value={result.confidence * 100} className="w-full max-w-xs" />
                 <span>{(result.confidence * 100).toFixed(0)}%</span>
               </div>
             </div>
             <div>
-              <h4 className="font-semibold text-primary">Recommended Treatment</h4>
+              <h4 className="font-semibold text-primary">{t('plantDiseaseDetectorCard.resultTreatment')}</h4>
               <p className="whitespace-pre-wrap">{result.treatment}</p>
             </div>
           </div>

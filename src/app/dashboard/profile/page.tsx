@@ -2,30 +2,30 @@
 "use client";
 
 import { PageHeader } from '@/components/page-header';
-import { User, LogOut } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/lib/i18n';
 
 export default function ProfilePage() {
-  const router = useRouter();
+  const { t } = useLanguage();
   
   return (
     <div>
       <PageHeader
-        title="My Profile"
-        description="Manage your account details and settings."
+        title={t('profilePage.title')}
+        description={t('profilePage.description')}
         icon={User}
       />
       <Card>
         <CardHeader>
             <div>
-                <CardTitle className="font-headline text-2xl">Account Information</CardTitle>
-                <CardDescription>View and edit your personal information.</CardDescription>
+                <CardTitle className="font-headline text-2xl">{t('profilePage.accountInfo')}</CardTitle>
+                <CardDescription>{t('profilePage.viewAndEdit')}</CardDescription>
             </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -36,7 +36,7 @@ export default function ProfilePage() {
                 </Avatar>
                 <div>
                     <h3 className="text-xl font-semibold">John Doe</h3>
-                    <p className="text-muted-foreground">Joined on June 2024</p>
+                    <p className="text-muted-foreground">{t('profilePage.joined')}</p>
                 </div>
             </div>
 
@@ -45,23 +45,23 @@ export default function ProfilePage() {
             <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name">{t('profilePage.fullName')}</Label>
                         <Input id="name" defaultValue="John Doe" />
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email">{t('profilePage.email')}</Label>
                         <Input id="email" type="email" defaultValue="farmer@example.com" disabled/>
                     </div>
                 </div>
-                <Button>Save Changes</Button>
+                <Button>{t('common.saveChanges')}</Button>
             </form>
 
             <Separator/>
             
             <div>
-                <h3 className="text-lg font-semibold text-destructive">Delete Account</h3>
-                <p className="text-sm text-muted-foreground mb-2">Permanently delete your account and all associated data. This action cannot be undone.</p>
-                <Button variant="destructive">Delete My Account</Button>
+                <h3 className="text-lg font-semibold text-destructive">{t('profilePage.deleteAccount')}</h3>
+                <p className="text-sm text-muted-foreground mb-2">{t('profilePage.deleteWarning')}</p>
+                <Button variant="destructive">{t('profilePage.deleteButton')}</Button>
             </div>
 
         </CardContent>

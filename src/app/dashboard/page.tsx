@@ -15,44 +15,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from '@/components/ui/label';
-import { useEffect, useState } from 'react';
-
-const LANGUAGE_STORAGE_KEY = 'appLanguage';
+import { useLanguage } from '@/lib/i18n';
 
 export default function DashboardHomePage() {
-  const [language, setLanguage] = useState('English');
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    try {
-      const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (storedLanguage) {
-        setLanguage(storedLanguage);
-      }
-    } catch (error) {
-      console.error("Failed to get language from localStorage", error);
-    }
-    setIsMounted(true);
-  }, []);
-
-  const handleLanguageChange = (value: string) => {
-    setLanguage(value);
-     try {
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, value);
-    } catch (error) {
-      console.error("Failed to set language in localStorage", error);
-    }
-  };
-
-  if (!isMounted) {
-    return null; // Or a loading spinner
-  }
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <div>
       <PageHeader
-        title="Welcome, Farmer!"
-        description="Your AI-powered assistant for modern agriculture."
+        title={t('dashboardHome.title')}
+        description={t('dashboardHome.description')}
         icon={Home}
       />
       
@@ -60,20 +32,20 @@ export default function DashboardHomePage() {
         <CardContent className="p-6">
           <div className="flex items-center gap-3">
             <Languages className="h-6 w-6 text-primary"/>
-            <Label htmlFor="language-select" className="text-lg font-medium">Select Your Language</Label>
+            <Label htmlFor="language-select" className="text-lg font-medium">{t('dashboardHome.selectLanguage')}</Label>
           </div>
-          <Select value={language} onValueChange={handleLanguageChange}>
+          <Select value={language} onValueChange={setLanguage}>
             <SelectTrigger id="language-select" className="mt-2">
-              <SelectValue placeholder="Select language" />
+              <SelectValue placeholder={t('dashboardHome.selectLanguage')} />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="English">English</SelectItem>
-                <SelectItem value="Hindi">Hindi</SelectItem>
-                <SelectItem value="Kannada">Kannada</SelectItem>
-                <SelectItem value="Marathi">Marathi</SelectItem>
-                <SelectItem value="Tamil">Tamil</SelectItem>
-                <SelectItem value="Telugu">Telugu</SelectItem>
-                <SelectItem value="Malayalam">Malayalam</SelectItem>
+                <SelectItem value="English">{t('common.english')}</SelectItem>
+                <SelectItem value="Hindi">{t('common.hindi')}</SelectItem>
+                <SelectItem value="Kannada">{t('common.kannada')}</SelectItem>
+                <SelectItem value="Marathi">{t('common.marathi')}</SelectItem>
+                <SelectItem value="Tamil">{t('common.tamil')}</SelectItem>
+                <SelectItem value="Telugu">{t('common.telugu')}</SelectItem>
+                <SelectItem value="Malayalam">{t('common.malayalam')}</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
@@ -81,7 +53,7 @@ export default function DashboardHomePage() {
 
 
       <div className="mt-6">
-        <AskAiCard language={language} />
+        <AskAiCard />
       </div>
 
       <div className="mt-12">
@@ -93,13 +65,13 @@ export default function DashboardHomePage() {
                             <BookText className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-headline tracking-tight text-foreground">Read Our Blog</h2>
-                            <p className="text-muted-foreground mt-1 text-sm">Get the latest tips and insights on modern agriculture.</p>
+                            <h2 className="text-2xl font-headline tracking-tight text-foreground">{t('dashboardHome.readBlogTitle')}</h2>
+                            <p className="text-muted-foreground mt-1 text-sm">{t('dashboardHome.readBlogDescription')}</p>
                         </div>
                     </div>
                     <Link href="/blog">
                         <Button>
-                            View All Posts
+                            {t('dashboardHome.viewAllPosts')}
                         </Button>
                     </Link>
                 </div>

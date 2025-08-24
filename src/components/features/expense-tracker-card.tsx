@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IndianRupee, PlusCircle, MinusCircle, Trash2 } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import { useLanguage } from '@/lib/i18n';
 
 type Transaction = {
   id: number;
@@ -19,6 +21,7 @@ type Transaction = {
 const STORAGE_KEY = 'transactions';
 
 export function ExpenseTrackerCard() {
+  const { t } = useLanguage();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -84,22 +87,22 @@ export function ExpenseTrackerCard() {
       <CardHeader>
         <div className="flex items-center gap-3">
             <IndianRupee className="h-6 w-6 text-primary" />
-            <CardTitle className="font-headline text-2xl">Expense & Income Tracker</CardTitle>
+            <CardTitle className="font-headline text-2xl">{t('expenseTrackerCard.title')}</CardTitle>
         </div>
-        <CardDescription>Log your farm's income and expenses to manage your finances.</CardDescription>
+        <CardDescription>{t('expenseTrackerCard.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
             <div className="p-4 bg-green-100/50 rounded-lg border border-green-200">
-                <p className="text-sm text-muted-foreground">Total Income</p>
+                <p className="text-sm text-muted-foreground">{t('expenseTrackerCard.totalIncome')}</p>
                 <p className="text-2xl font-bold text-green-600">₹{totalIncome.toLocaleString()}</p>
             </div>
             <div className="p-4 bg-red-100/50 rounded-lg border border-red-200">
-                <p className="text-sm text-muted-foreground">Total Expenses</p>
+                <p className="text-sm text-muted-foreground">{t('expenseTrackerCard.totalExpenses')}</p>
                 <p className="text-2xl font-bold text-red-600">₹{totalExpense.toLocaleString()}</p>
             </div>
              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <p className="text-sm text-muted-foreground">Net Balance</p>
+                <p className="text-sm text-muted-foreground">{t('expenseTrackerCard.netBalance')}</p>
                 <p className={`text-2xl font-bold ${netBalance >= 0 ? 'text-primary' : 'text-red-600'}`}>₹{netBalance.toLocaleString()}</p>
             </div>
         </div>
@@ -108,32 +111,32 @@ export function ExpenseTrackerCard() {
 
         <form onSubmit={handleAddTransaction} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4 mb-6">
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="description">Description</Label>
-            <Input id="description" placeholder="e.g., Sold Wheat" value={description} onChange={(e) => setDescription(e.target.value)} required />
+            <Label htmlFor="description">{t('expenseTrackerCard.formDescription')}</Label>
+            <Input id="description" placeholder={t('expenseTrackerCard.formDescriptionPlaceholder')} value={description} onChange={(e) => setDescription(e.target.value)} required />
           </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="amount">Amount (₹)</Label>
-            <Input id="amount" type="number" placeholder="e.g., 15000" value={amount} onChange={(e) => setAmount(e.target.value)} required />
+            <Label htmlFor="amount">{t('expenseTrackerCard.formAmount')}</Label>
+            <Input id="amount" type="number" placeholder={t('expenseTrackerCard.formAmountPlaceholder')} value={amount} onChange={(e) => setAmount(e.target.value)} required />
           </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="type">Type</Label>
+            <Label htmlFor="type">{t('expenseTrackerCard.formType')}</Label>
             <Select value={type} onValueChange={(value: 'income' | 'expense') => setType(value)}>
               <SelectTrigger id="type">
-                <SelectValue placeholder="Select type" />
+                <SelectValue placeholder={t('expenseTrackerCard.formType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="income">Income</SelectItem>
-                <SelectItem value="expense">Expense</SelectItem>
+                <SelectItem value="income">{t('expenseTrackerCard.formTypeIncome')}</SelectItem>
+                <SelectItem value="expense">{t('expenseTrackerCard.formTypeExpense')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" className="w-full md:w-auto">Add Transaction</Button>
+          <Button type="submit" className="w-full md:w-auto">{t('expenseTrackerCard.buttonText')}</Button>
         </form>
 
         <Separator className="my-6"/>
 
         <div>
-          <h3 className="font-headline text-xl mb-4">Recent Transactions</h3>
+          <h3 className="font-headline text-xl mb-4">{t('expenseTrackerCard.recentTransactions')}</h3>
           <div className="space-y-3">
             {transactions.slice().reverse().map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">

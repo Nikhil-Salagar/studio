@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,35 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, MessageSquare } from 'lucide-react';
 import { answerFarmerQuestions } from '@/ai/flows/answer-farmer-questions';
 import { useToast } from '@/hooks/use-toast';
-
-const LANGUAGE_STORAGE_KEY = 'appLanguage';
+import { useLanguage } from '@/lib/i18n';
 
 export function CommunityQaCard() {
+  const { language, setLanguage, t } = useLanguage();
   const [question, setQuestion] = useState('');
-  const [language, setLanguage] = useState('English');
   const [answer, setAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    try {
-      const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (storedLanguage) {
-        setLanguage(storedLanguage);
-      }
-    } catch (error) {
-      console.error("Failed to read language from local storage", error);
-    }
-  }, []);
-
-  const handleLanguageChange = (value: string) => {
-    setLanguage(value);
-    try {
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, value);
-    } catch (error) {
-      console.error("Failed to save language to local storage", error);
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,16 +45,16 @@ export function CommunityQaCard() {
       <CardHeader>
         <div className="flex items-center gap-3">
             <MessageSquare className="h-6 w-6 text-primary" />
-            <CardTitle className="font-headline text-2xl">Community Q&A</CardTitle>
+            <CardTitle className="font-headline text-2xl">{t('communityQACard.title')}</CardTitle>
         </div>
-        <CardDescription>Ask a question in your language and get an AI-powered answer.</CardDescription>
+        <CardDescription>{t('communityQACard.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="question">Your Question</Label>
+            <Label htmlFor="question">{t('communityQACard.yourQuestion')}</Label>
             <Textarea
-              placeholder="e.g., How can I improve my wheat yield?"
+              placeholder={t('communityQACard.placeholder')}
               id="question"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -82,31 +62,31 @@ export function CommunityQaCard() {
             />
           </div>
           <div className="w-full md:w-1/2">
-            <Label htmlFor="language">Language</Label>
-            <Select value={language} onValueChange={handleLanguageChange}>
+            <Label htmlFor="language">{t('common.language')}</Label>
+            <Select value={language} onValueChange={setLanguage}>
               <SelectTrigger id="language">
-                <SelectValue placeholder="Select language" />
+                <SelectValue placeholder={t('common.language')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="English">English</SelectItem>
-                <SelectItem value="Hindi">Hindi</SelectItem>
-                <SelectItem value="Kannada">Kannada</SelectItem>
-                <SelectItem value="Marathi">Marathi</SelectItem>
-                <SelectItem value="Tamil">Tamil</SelectItem>
-                <SelectItem value="Telugu">Telugu</SelectItem>
-                <SelectItem value="Malayalam">Malayalam</SelectItem>
+                <SelectItem value="English">{t('common.english')}</SelectItem>
+                <SelectItem value="Hindi">{t('common.hindi')}</SelectItem>
+                <SelectItem value="Kannada">{t('common.kannada')}</SelectItem>
+                <SelectItem value="Marathi">{t('common.marathi')}</SelectItem>
+                <SelectItem value="Tamil">{t('common.tamil')}</SelectItem>
+                <SelectItem value="Telugu">{t('common.telugu')}</SelectItem>
+                <SelectItem value="Malayalam">{t('common.malayalam')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <Button type="submit" disabled={isLoading || !question}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Get Answer
+            {t('communityQACard.buttonText')}
           </Button>
         </form>
 
         {answer && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <h3 className="font-semibold text-lg text-primary mb-2">AI Generated Answer:</h3>
+            <h3 className="font-semibold text-lg text-primary mb-2">{t('communityQACard.resultsTitle')}</h3>
             <p className="text-foreground whitespace-pre-wrap">{answer}</p>
           </div>
         )}

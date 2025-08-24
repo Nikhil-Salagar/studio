@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -14,11 +15,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useLanguage } from '@/lib/i18n';
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const STORAGE_KEY = 'cropCarePlanData';
 
 export function CropCarePlannerCard() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     crop: '',
     harvestMonths: '',
@@ -203,19 +206,19 @@ export function CropCarePlannerCard() {
       <CardHeader>
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-6 w-6 text-primary" />
-          <CardTitle className="font-headline text-2xl">Crop Care Planner</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t('cropCarePlannerCard.title')}</CardTitle>
         </div>
-        <CardDescription>Get a monthly plan for fertilizers, pesticides, and herbicides. Optionally upload a photo for AI analysis.</CardDescription>
+        <CardDescription>{t('cropCarePlannerCard.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="crop">Crop</Label>
-              <Input id="crop" placeholder="e.g., Tomato" value={formData.crop} onChange={handleChange} required />
+              <Label htmlFor="crop">{t('cropCarePlannerCard.crop')}</Label>
+              <Input id="crop" placeholder={t('cropCarePlannerCard.cropPlaceholder')} value={formData.crop} onChange={handleChange} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="plantationDate">Plantation Date</Label>
+              <Label htmlFor="plantationDate">{t('cropCarePlannerCard.plantationDate')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -225,7 +228,7 @@ export function CropCarePlannerCard() {
                       !plantationDate && "text-muted-foreground"
                     )}
                   >
-                    {plantationDate ? format(plantationDate, "PPP") : <span>Pick a date</span>}
+                    {plantationDate ? format(plantationDate, "PPP") : <span>{t('cropCarePlannerCard.pickDate')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -239,20 +242,20 @@ export function CropCarePlannerCard() {
               </Popover>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="harvestMonths">Months to Harvest</Label>
-              <Input id="harvestMonths" type="number" placeholder="e.g., 3" value={formData.harvestMonths} onChange={handleChange} required />
+              <Label htmlFor="harvestMonths">{t('cropCarePlannerCard.harvestMonths')}</Label>
+              <Input id="harvestMonths" type="number" placeholder={t('cropCarePlannerCard.harvestMonthsPlaceholder')} value={formData.harvestMonths} onChange={handleChange} required />
             </div>
             <div className="space-y-2">
-                <Label>Crop Photo (Optional)</Label>
+                <Label>{t('cropCarePlannerCard.cropPhoto')}</Label>
                 <div className="flex gap-2">
                     <Input id="photo" type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} className="hidden"/>
                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                         <Upload className="mr-2 h-4 w-4"/>
-                        {photo || photoPreview ? 'Change' : 'Upload'}
+                        {photo || photoPreview ? t('common.change') : t('common.upload')}
                     </Button>
                     <Button type="button" variant="outline" onClick={() => setIsCameraOpen(true)}>
                         <Camera className="mr-2 h-4 w-4"/>
-                        Open Camera
+                        {t('common.openCamera')}
                     </Button>
                 </div>
             </div>
@@ -268,8 +271,8 @@ export function CropCarePlannerCard() {
             <div className="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50 p-4">
                 <Card className="w-full max-w-lg">
                     <CardHeader>
-                        <CardTitle>Live Camera</CardTitle>
-                        <CardDescription>Position the plant in the frame and capture.</CardDescription>
+                        <CardTitle>{t('cropCarePlannerCard.cameraCardTitle')}</CardTitle>
+                        <CardDescription>{t('cropCarePlannerCard.cameraCardDescription')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <video ref={videoRef} className="w-full aspect-video rounded-md" autoPlay muted />
@@ -281,12 +284,12 @@ export function CropCarePlannerCard() {
                         )}
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setIsCameraOpen(false)}>Cancel</Button>
+                        <Button variant="outline" onClick={() => setIsCameraOpen(false)}>{t('common.cancel')}</Button>
                         <Button variant="outline" onClick={handleToggleCamera} disabled={hasCameraPermission !== true}>
                             <SwitchCamera className="mr-2 h-4 w-4" />
-                            Switch
+                            {t('common.switchCamera')}
                         </Button>
-                        <Button onClick={handleCapture} disabled={hasCameraPermission !== true}>Capture Photo</Button>
+                        <Button onClick={handleCapture} disabled={hasCameraPermission !== true}>{t('common.capture')}</Button>
                     </CardFooter>
                 </Card>
             </div>
@@ -294,16 +297,16 @@ export function CropCarePlannerCard() {
 
           <Button type="submit" disabled={isLoading || !isFormValid()}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Generate Plan
+            {t('cropCarePlannerCard.buttonText')}
           </Button>
         </form>
 
         {result && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
-            <h3 className="font-headline text-xl text-foreground">Your Crop Care Plan:</h3>
+            <h3 className="font-headline text-xl text-foreground">{t('cropCarePlannerCard.resultsTitle')}</h3>
             {result.photoAnalysis && (
                 <div>
-                    <h4 className="font-semibold text-primary">Photo Analysis</h4>
+                    <h4 className="font-semibold text-primary">{t('cropCarePlannerCard.photoAnalysis')}</h4>
                     <p className="whitespace-pre-wrap">{result.photoAnalysis}</p>
                 </div>
             )}
@@ -311,19 +314,19 @@ export function CropCarePlannerCard() {
                 {result.monthlyPlan.map((monthPlan) => (
                     <Card key={monthPlan.month}>
                         <CardHeader>
-                            <CardTitle>Month {monthPlan.month}</CardTitle>
+                            <CardTitle>{t('cropCarePlannerCard.month')} {monthPlan.month}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <div>
-                                <h5 className="font-semibold">Fertilizer:</h5>
+                                <h5 className="font-semibold">{t('cropCarePlannerCard.fertilizer')}:</h5>
                                 <p>{monthPlan.fertilizer}</p>
                             </div>
                              <div>
-                                <h5 className="font-semibold">Herbicide:</h5>
+                                <h5 className="font-semibold">{t('cropCarePlannerCard.herbicide')}:</h5>
                                 <p>{monthPlan.herbicide}</p>
                             </div>
                              <div>
-                                <h5 className="font-semibold">Pesticide:</h5>
+                                <h5 className="font-semibold">{t('cropCarePlannerCard.pesticide')}:</h5>
                                 <p>{monthPlan.pesticide}</p>
                             </div>
                         </CardContent>

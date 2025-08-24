@@ -1,8 +1,12 @@
 
+'use client';
+
 import Link from "next/link";
 import { AppLogo } from "./app-logo";
+import { useLanguage } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="bg-muted/50 border-t mt-auto">
       <div className="container mx-auto py-8 px-4">
@@ -10,62 +14,62 @@ export function Footer() {
           <div className="space-y-4">
             <AppLogo />
             <p className="text-muted-foreground">
-              Empowering farmers with AI-driven insights for a sustainable future.
+              {t('footer.tagline')}
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-                  Dashboard
+                  {t('footer.dashboard')}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/my-farm" className="text-muted-foreground hover:text-primary transition-colors">
-                  My Farm
+                  {t('footer.myFarm')}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/community" className="text-muted-foreground hover:text-primary transition-colors">
-                  Community
+                  {t('footer.community')}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Company</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">{t('footer.company')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  About Us
+                  {t('footer.aboutUs')}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-                  Contact Us
+                  {t('footer.contactUs')}
                 </Link>
               </li>
                <li>
                 <Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors">
-                  Blog
+                  {t('footer.blog')}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Legal</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">{t('footer.legal')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
+                  {t('footer.privacyPolicy')}
                 </Link>
               </li>
             </ul>
           </div>
         </div>
         <div className="mt-8 border-t pt-4 text-center text-muted-foreground text-sm">
-          &copy; {new Date().getFullYear()} NS Agri AI. All Rights Reserved.
+          {t('footer.copyright', { year: new Date().getFullYear() })}
         </div>
       </div>
     </footer>

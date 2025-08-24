@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,10 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Trees } from 'lucide-react';
 import { suggestCrops, type SuggestCropsOutput } from '@/ai/flows/suggest-crops';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/lib/i18n';
 
 const STORAGE_KEY = 'cropSuggestionData';
 
 export function CropSuggestionCard() {
+  const { t } = useLanguage();
   const [soilType, setSoilType] = useState('');
   const [season, setSeason] = useState('');
   const [location, setLocation] = useState('');
@@ -78,44 +81,44 @@ export function CropSuggestionCard() {
       <CardHeader>
         <div className="flex items-center gap-3">
           <Trees className="h-6 w-6 text-primary" />
-          <CardTitle className="font-headline text-2xl">Crop Suggestions</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t('cropSuggestionCard.title')}</CardTitle>
         </div>
-        <CardDescription>Get AI-powered crop recommendations based on your farm's conditions.</CardDescription>
+        <CardDescription>{t('cropSuggestionCard.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="soil-type">Soil Type</Label>
-              <Input id="soil-type" placeholder="e.g., Loamy, Sandy, Clay" value={soilType} onChange={(e) => setSoilType(e.target.value)} required />
+              <Label htmlFor="soil-type">{t('cropSuggestionCard.soilType')}</Label>
+              <Input id="soil-type" placeholder={t('cropSuggestionCard.soilTypePlaceholder')} value={soilType} onChange={(e) => setSoilType(e.target.value)} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="season">Season</Label>
+              <Label htmlFor="season">{t('cropSuggestionCard.season')}</Label>
               <Select value={season} onValueChange={setSeason} required>
                 <SelectTrigger id="season">
-                  <SelectValue placeholder="Select a season" />
+                  <SelectValue placeholder={t('cropSuggestionCard.seasonPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Kharif (Monsoon)">Kharif (Monsoon)</SelectItem>
-                  <SelectItem value="Rabi (Winter)">Rabi (Winter)</SelectItem>
-                  <SelectItem value="Zaid (Summer)">Zaid (Summer)</SelectItem>
+                  <SelectItem value="Kharif (Monsoon)">{t('cropSuggestionCard.kharif')}</SelectItem>
+                  <SelectItem value="Rabi (Winter)">{t('cropSuggestionCard.rabi')}</SelectItem>
+                  <SelectItem value="Zaid (Summer)">{t('cropSuggestionCard.zaid')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input id="location" placeholder="e.g., Punjab, India" value={location} onChange={(e) => setLocation(e.target.value)} required />
+            <Label htmlFor="location">{t('cropSuggestionCard.location')}</Label>
+            <Input id="location" placeholder={t('cropSuggestionCard.locationPlaceholder')} value={location} onChange={(e) => setLocation(e.target.value)} required />
           </div>
           <Button type="submit" disabled={isLoading || !soilType || !season || !location}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Suggest Crops
+            {t('cropSuggestionCard.buttonText')}
           </Button>
         </form>
 
         {result && result.crops && (
           <div className="mt-6">
-            <h3 className="font-headline text-xl text-foreground mb-4">Recommended Crops:</h3>
+            <h3 className="font-headline text-xl text-foreground mb-4">{t('cropSuggestionCard.resultsTitle')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {result.crops.map((crop, index) => (
                 <Card key={index} className="bg-primary/5">

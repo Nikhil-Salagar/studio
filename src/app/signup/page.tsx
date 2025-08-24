@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppLogo } from "@/components/app-logo";
+import { useLanguage } from "@/lib/i18n";
 
 export default function SignupPage() {
+  const { t } = useLanguage();
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -15,19 +17,19 @@ export default function SignupPage() {
           <div className="flex justify-center mb-4">
             <AppLogo />
           </div>
-          <CardTitle className="text-3xl font-headline">Welcome</CardTitle>
+          <CardTitle className="text-3xl font-headline">{t('signupPage.title')}</CardTitle>
           <CardDescription>
-            Join our community of modern farmers.
+            {t('signupPage.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
             <Button asChild className="w-full text-lg py-6">
                 <Link href="/dashboard">
-                    Proceed to Dashboard
+                    {t('signupPage.proceedToDashboard')}
                 </Link>
             </Button>
           <div className="mt-4 text-center text-sm">
-            You can directly access all features of the app.
+            {t('signupPage.message')}
           </div>
         </CardContent>
       </Card>

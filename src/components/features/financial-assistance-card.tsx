@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -9,8 +10,10 @@ import { Loader2, MessageCircleQuestion } from 'lucide-react';
 import { getFinancialAssistance } from '@/ai/flows/get-financial-assistance';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useLanguage } from '@/lib/i18n';
 
 export function FinancialAssistanceCard() {
+  const { t } = useLanguage();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
   const [assistance, setAssistance] = useState('');
@@ -42,29 +45,29 @@ export function FinancialAssistanceCard() {
       <CardHeader>
         <div className="flex items-center gap-3">
             <MessageCircleQuestion className="h-6 w-6 text-primary" />
-            <CardTitle className="font-headline text-2xl">Financial Assistant</CardTitle>
+            <CardTitle className="font-headline text-2xl">{t('financialAssistanceCard.title')}</CardTitle>
         </div>
-        <CardDescription>Get AI-powered guidance on loans, subsidies, and insurance.</CardDescription>
+        <CardDescription>{t('financialAssistanceCard.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
            <div className="space-y-2">
-              <Label htmlFor="category">Assistance Category</Label>
+              <Label htmlFor="category">{t('financialAssistanceCard.category')}</Label>
               <Select onValueChange={setCategory} required>
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={t('financialAssistanceCard.categoryPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Government Loans">Government Loans</SelectItem>
-                  <SelectItem value="Government Subsidies">Government Subsidies</SelectItem>
-                  <SelectItem value="Crop Insurance">Crop Insurance</SelectItem>
+                  <SelectItem value="Government Loans">{t('financialAssistanceCard.catLoans')}</SelectItem>
+                  <SelectItem value="Government Subsidies">{t('financialAssistanceCard.catSubsidies')}</SelectItem>
+                  <SelectItem value="Crop Insurance">{t('financialAssistanceCard.catInsurance')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="query">Your Query</Label>
+            <Label htmlFor="query">{t('financialAssistanceCard.yourQuery')}</Label>
             <Textarea
-              placeholder="e.g., How can I apply for a tractor loan? What documents are required?"
+              placeholder={t('financialAssistanceCard.queryPlaceholder')}
               id="query"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -73,13 +76,13 @@ export function FinancialAssistanceCard() {
           </div>
           <Button type="submit" disabled={isLoading || !query || !category}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Get Assistance
+            {t('financialAssistanceCard.buttonText')}
           </Button>
         </form>
 
         {assistance && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <h3 className="font-semibold text-lg text-primary mb-2">AI Generated Guidance:</h3>
+            <h3 className="font-semibold text-lg text-primary mb-2">{t('financialAssistanceCard.resultsTitle')}</h3>
             <p className="text-foreground whitespace-pre-wrap">{assistance}</p>
           </div>
         )}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { PageHeader } from '@/components/page-header';
@@ -8,9 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/lib/i18n';
 
 export default function ContactUsPage() {
     const { toast } = useToast();
+    const { t } = useLanguage();
     
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -38,41 +41,41 @@ export default function ContactUsPage() {
   return (
     <div className="container mx-auto max-w-2xl py-12 px-4">
       <PageHeader
-        title="Contact Us"
-        description="We'd love to hear from you. Reach out with any questions or feedback."
+        title={t('contactPage.title')}
+        description={t('contactPage.description')}
         icon={Mail}
       />
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Send us a Message</CardTitle>
+          <CardTitle className="font-headline">{t('contactPage.formTitle')}</CardTitle>
           <CardDescription>
-            Fill out the form below and we will get back to you as soon as possible.
+            {t('contactPage.formDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" name="name" placeholder="John Doe" required />
+                <Label htmlFor="name">{t('contactPage.nameLabel')}</Label>
+                <Input id="name" name="name" placeholder={t('contactPage.namePlaceholder')} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" name="email" type="email" placeholder="you@example.com" required />
+                <Label htmlFor="email">{t('contactPage.emailLabel')}</Label>
+                <Input id="email" name="email" type="email" placeholder={t('contactPage.emailPlaceholder')} required />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">Your Message</Label>
+              <Label htmlFor="message">{t('contactPage.messageLabel')}</Label>
               <Textarea
                 id="message"
                 name="message"
-                placeholder="Please describe your issue or feedback..."
+                placeholder={t('contactPage.messagePlaceholder')}
                 rows={6}
                 required
               />
             </div>
             <Button type="submit" className="w-full">
-              Send Message
+              {t('common.send')}
             </Button>
           </form>
         </CardContent>
