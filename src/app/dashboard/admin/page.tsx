@@ -2,7 +2,7 @@
 'use client';
 
 import { PageHeader } from '@/components/page-header';
-import { Shield, PlusCircle, ArrowLeft } from 'lucide-react';
+import { Shield, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { blogPosts, type BlogPost } from '@/app/blog/posts';
 import {
@@ -17,9 +17,10 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/lib/i18n';
 
 const STORAGE_KEY = 'blogPostsData';
 const ADMIN_PASSWORD = 'Salagar@123';
@@ -28,10 +29,10 @@ const AUTH_KEY = 'isAdminAuthenticated';
 export default function AdminPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
   
-  const [currentPosts, setCurrentPosts] = useState<BlogPost[]>(blogPosts);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isPromptOpen, setIsPromptOpen] = useState(true);
+  const [currentPosts, setCurrentPosts] = useState<BlogPost[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(undefined);
   const [passwordInput, setPasswordInput] = useState('');
 
   useEffect(() => {
@@ -39,30 +40,30 @@ export default function AdminPage() {
       const authStatus = sessionStorage.getItem(AUTH_KEY);
       if (authStatus === 'true') {
         setIsAuthenticated(true);
-        setIsPromptOpen(false);
       } else {
         setIsAuthenticated(false);
-        setIsPromptOpen(true);
       }
     } catch (error) {
        console.error('Session storage not available.');
        setIsAuthenticated(false);
-       setIsPromptOpen(true);
     }
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-    try {
-      const storedData = localStorage.getItem(STORAGE_KEY);
-      if (storedData) {
-        setCurrentPosts(JSON.parse(storedData));
-      } else {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(blogPosts));
+    if (isAuthenticated) {
+      try {
+        const storedData = localStorage.getItem(STORAGE_KEY);
+        if (storedData) {
+          setCurrentPosts(JSON.parse(storedData));
+        } else {
+          // If no data in local storage, use the initial posts and save them.
+          setCurrentPosts(blogPosts);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(blogPosts));
+        }
+      } catch (error) {
+        console.error("Failed to parse blog posts from localStorage", error);
+        setCurrentPosts(blogPosts);
       }
-    } catch (error) {
-      console.error("Failed to parse blog posts from localStorage", error);
-      setCurrentPosts(blogPosts);
     }
   }, [isAuthenticated]);
   
@@ -74,7 +75,6 @@ export default function AdminPage() {
         console.error('Session storage not available.');
       }
       setIsAuthenticated(true);
-      setIsPromptOpen(false);
       setPasswordInput('');
     } else {
       toast({
@@ -87,13 +87,16 @@ export default function AdminPage() {
   };
 
   const handleCancelPrompt = () => {
-      setIsPromptOpen(false);
       router.back();
+  }
+  
+  if (isAuthenticated === undefined) {
+    return null; // Or a loading spinner
   }
 
   if (!isAuthenticated) {
     return (
-       <AlertDialog open={isPromptOpen}>
+       <AlertDialog open={true}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Admin Access Required</AlertDialogTitle>
@@ -117,8 +120,8 @@ export default function AdminPage() {
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelPrompt}>Cancel</AlertDialogCancel>
-            <Button onClick={handlePasswordSubmit}>Continue</Button>
+            <Button variant="outline" onClick={handleCancelPrompt}>{t('common.cancel')}</Button>
+            <Button onClick={handlePasswordSubmit}>{t('common.continue')}</Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -161,9 +164,9 @@ export default function AdminPage() {
                   <TableCell className="hidden md:table-cell">{post.description}</TableCell>
                   <TableCell className="text-right">
                     <Link href={`/dashboard/edit/${post.slug}`}>
-                      <Button variant="outline" size="sm" className="mr-2">Edit</Button>
+                      <Button variant="outline" size="sm" className="mr-2">{t('common.edit')}</Button>
                     </Link>
-                    <Button variant="destructive" size="sm">Delete</Button>
+                    <Button variant="destructive" size="sm">{t('common.delete')}</Button>
                   </TableCell>
                 </TableRow>
               ))}
