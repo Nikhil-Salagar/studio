@@ -71,10 +71,15 @@ export default function AdminPage() {
     if (passwordInput === ADMIN_PASSWORD) {
       try {
         sessionStorage.setItem(AUTH_KEY, 'true');
+        setIsAuthenticated(true);
       } catch (error) {
         console.error('Session storage not available.');
+        toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: 'Could not access session storage. Please enable cookies and try again.',
+        });
       }
-      setIsAuthenticated(true);
       setPasswordInput('');
     } else {
       toast({
@@ -91,7 +96,7 @@ export default function AdminPage() {
   }
   
   if (isAuthenticated === undefined) {
-    return null; // Or a loading spinner
+    return null; // Or a loading spinner while checking auth status
   }
 
   if (!isAuthenticated) {
