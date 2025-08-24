@@ -1,6 +1,7 @@
+
 'use server';
 /**
- * @fileOverview A Genkit flow to answer general farmer questions.
+ * @fileOverview A Genkit flow to answer general farmer questions in their native language.
  *
  * - askAi - A function that handles the process of answering a question.
  * - AskAiInput - The input type for the askAi function.
@@ -12,11 +13,12 @@ import {z} from 'genkit';
 
 const AskAiInputSchema = z.object({
   question: z.string().describe('The question asked by the user.'),
+  language: z.string().describe('The language for the answer.'),
 });
 export type AskAiInput = z.infer<typeof AskAiInputSchema>;
 
 const AskAiOutputSchema = z.object({
-  answer: z.string().describe('The answer to the question.'),
+  answer: z.string().describe('The answer to the question in the specified language.'),
 });
 export type AskAiOutput = z.infer<typeof AskAiOutputSchema>;
 
@@ -32,7 +34,7 @@ const prompt = ai.definePrompt({
 
 Question: {{{question}}}
 
-Please provide a helpful, concise, and informative answer.
+Please provide a helpful, concise, and informative answer in the following language: {{{language}}}.
 `,
 });
 

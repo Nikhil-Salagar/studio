@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,12 +11,34 @@ import { Loader2, MessageSquare } from 'lucide-react';
 import { answerFarmerQuestions } from '@/ai/flows/answer-farmer-questions';
 import { useToast } from '@/hooks/use-toast';
 
+const LANGUAGE_STORAGE_KEY = 'appLanguage';
+
 export function CommunityQaCard() {
   const [question, setQuestion] = useState('');
   const [language, setLanguage] = useState('English');
   const [answer, setAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    try {
+      const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (storedLanguage) {
+        setLanguage(storedLanguage);
+      }
+    } catch (error) {
+      console.error("Failed to read language from local storage", error);
+    }
+  }, []);
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value);
+    try {
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, value);
+    } catch (error) {
+      console.error("Failed to save language to local storage", error);
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,15 +83,18 @@ export function CommunityQaCard() {
           </div>
           <div className="w-full md:w-1/2">
             <Label htmlFor="language">Language</Label>
-            <Select value={language} onValueChange={setLanguage}>
+            <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger id="language">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="English">English</SelectItem>
                 <SelectItem value="Hindi">Hindi</SelectItem>
-                <SelectItem value="Spanish">Spanish</SelectItem>
-                <SelectItem value="French">French</SelectItem>
+                <SelectItem value="Kannada">Kannada</SelectItem>
+                <SelectItem value="Marathi">Marathi</SelectItem>
+                <SelectItem value="Tamil">Tamil</SelectItem>
+                <SelectItem value="Telugu">Telugu</SelectItem>
+                <SelectItem value="Malayalam">Malayalam</SelectItem>
               </SelectContent>
             </Select>
           </div>

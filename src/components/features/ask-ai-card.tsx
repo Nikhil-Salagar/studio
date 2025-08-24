@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -9,7 +10,7 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { askAi } from '@/ai/flows/ask-ai';
 import { useToast } from '@/hooks/use-toast';
 
-export function AskAiCard() {
+export function AskAiCard({ language }: { language: string }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,7 @@ export function AskAiCard() {
     setIsLoading(true);
     setAnswer('');
     try {
-      const result = await askAi({ question });
+      const result = await askAi({ question, language });
       setAnswer(result.answer);
     } catch (error) {
       console.error('Error getting answer:', error);
