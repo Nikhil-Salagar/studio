@@ -34,7 +34,7 @@ const textToSpeechFlow = ai.defineFlow(
   },
   async ({text}) => {
     const {media} = await ai.generate({
-      model: googleAI.model('text-to-speech-1'),
+      model: googleAI.model('tts-1'),
       prompt: text,
     });
     if (!media) {
