@@ -36,13 +36,6 @@ const textToSpeechFlow = ai.defineFlow(
     const {media} = await ai.generate({
       model: googleAI.model('text-to-speech-1'),
       prompt: text,
-      config: {
-        custom: {
-            voice: 'en-US-Standard-C', // A standard, clear voice
-            speed: 1.0, // Normal speaking rate
-            audioEncoding: 'MP3',
-        }
-      },
     });
     if (!media) {
       throw new Error('no media returned');
