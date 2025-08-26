@@ -37,14 +37,12 @@ const textToSpeechFlow = ai.defineFlow(
       model: googleAI.model('text-to-speech-1'),
       prompt: text,
       config: {
-        voiceConfig: {
-            voice: 'en-US-Standard-C', // A standard, clear voice
-            speed: 1.0 // Normal speaking rate
+        ttsConfig: {
+          voice: 'en-US-Standard-C', // A standard, clear voice
+          speed: 1.0, // Normal speaking rate
+          audioEncoding: 'MP3',
         },
-        audioConfig: {
-            audioEncoding: 'MP3'
-        }
-      }
+      },
     });
     if (!media) {
       throw new Error('no media returned');
