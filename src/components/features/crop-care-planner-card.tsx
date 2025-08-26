@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, ShieldCheck, Upload, Camera, SwitchCamera } from 'lucide-react';
+import { Loader2, ShieldCheck, Upload, Camera, SwitchCamera, Volume2 } from 'lucide-react';
 import { generateCropCarePlan, type GenerateCropCarePlanOutput } from '@/ai/flows/generate-crop-care-plan';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useLanguage } from '@/lib/i18n';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const STORAGE_KEY = 'cropCarePlanData';
@@ -31,6 +32,7 @@ export function CropCarePlannerCard() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateCropCarePlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isReading, setIsReading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -197,6 +199,36 @@ export function CropCarePlannerCard() {
     setIsLoading(false);
   };
   
+  const handleReadAloud = async () => {
+    if (!result) return;
+    let textToRead = "";
+    if (result.photoAnalysis) {
+      textToRead += `${t('cropCarePlannerCard.photoAnalysis')}: ${result.photoAnalysis}. `;
+    }
+    result.monthlyPlan.forEach(plan => {
+      textToRead += `${t('cropCarePlannerCard.month')} ${plan.month}: 
+        ${t('cropCarePlannerCard.fertilizer')}: ${plan.fertilizer}. 
+        ${t('cropCarePlannerCard.herbicide')}: ${plan.herbicide}. 
+        ${t('cropCarePlannerCard.pesticide')}: ${plan.pesticide}. `;
+    });
+
+    setIsReading(true);
+    try {
+      const { audio } = await textToSpeech({ text: textToRead });
+      const audioPlayer = new Audio(audio);
+      audioPlayer.play();
+      audioPlayer.onended = () => setIsReading(false);
+    } catch (error) {
+      console.error('Error with text-to-speech:', error);
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: "Could not play audio. Please try again.",
+      });
+      setIsReading(false);
+    }
+  };
+  
   if (!isMounted) {
     return null;
   }
@@ -303,7 +335,13 @@ export function CropCarePlannerCard() {
 
         {result && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
-            <h3 className="font-headline text-xl text-foreground">{t('cropCarePlannerCard.resultsTitle')}</h3>
+             <div className="flex justify-between items-center">
+                <h3 className="font-headline text-xl text-foreground">{t('cropCarePlannerCard.resultsTitle')}</h3>
+                <Button variant="ghost" size="icon" onClick={handleReadAloud} disabled={isReading}>
+                    {isReading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
+                    <span className="sr-only">Read aloud</span>
+                </Button>
+            </div>
             {result.photoAnalysis && (
                 <div>
                     <h4 className="font-semibold text-primary">{t('cropCarePlannerCard.photoAnalysis')}</h4>
@@ -339,3 +377,5 @@ export function CropCarePlannerCard() {
     </Card>
   );
 }
+
+    

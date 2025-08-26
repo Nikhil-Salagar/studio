@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Trees } from 'lucide-react';
+import { Loader2, Trees, Volume2 } from 'lucide-react';
 import { suggestCrops, type SuggestCropsOutput } from '@/ai/flows/suggest-crops';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/i18n';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const STORAGE_KEY = 'cropSuggestionData';
 
@@ -21,6 +22,7 @@ export function CropSuggestionCard() {
   const [location, setLocation] = useState('');
   const [result, setResult] = useState<SuggestCropsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isReading, setIsReading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   
@@ -71,6 +73,26 @@ export function CropSuggestionCard() {
     }
     setIsLoading(false);
   };
+  
+  const handleReadAloud = async () => {
+    if (!result || !result.crops) return;
+    const textToRead = result.crops.map(crop => `${crop.name}: ${crop.reason}`).join('. ');
+    setIsReading(true);
+    try {
+      const { audio } = await textToSpeech({ text: textToRead });
+      const audioPlayer = new Audio(audio);
+      audioPlayer.play();
+      audioPlayer.onended = () => setIsReading(false);
+    } catch (error) {
+      console.error('Error with text-to-speech:', error);
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: "Could not play audio. Please try again.",
+      });
+      setIsReading(false);
+    }
+  };
 
   if (!isMounted) {
     return null; // Or a loading skeleton
@@ -118,7 +140,13 @@ export function CropSuggestionCard() {
 
         {result && result.crops && (
           <div className="mt-6">
-            <h3 className="font-headline text-xl text-foreground mb-4">{t('cropSuggestionCard.resultsTitle')}</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-headline text-xl text-foreground">{t('cropSuggestionCard.resultsTitle')}</h3>
+              <Button variant="ghost" size="icon" onClick={handleReadAloud} disabled={isReading}>
+                {isReading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
+                <span className="sr-only">Read aloud</span>
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {result.crops.map((crop, index) => (
                 <Card key={index} className="bg-primary/5">
@@ -137,3 +165,5 @@ export function CropSuggestionCard() {
     </Card>
   );
 }
+
+    
