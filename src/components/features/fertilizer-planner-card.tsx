@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, TestTube2 } from 'lucide-react';
+import { Loader2, TestTube2, Volume2 } from 'lucide-react';
 import { recommendFertilizerPlan, type RecommendFertilizerPlanOutput } from '@/ai/flows/recommend-fertilizer-plan';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/i18n';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const STORAGE_KEY = 'fertilizerPlanData';
 
@@ -26,6 +27,7 @@ export function FertilizerPlannerCard() {
   });
   const [result, setResult] = useState<RecommendFertilizerPlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isReading, setIsReading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
 
@@ -98,6 +100,31 @@ export function FertilizerPlannerCard() {
     setIsLoading(false);
   };
   
+  const handleReadAloud = async () => {
+    if (!result) return;
+    const textToRead = `
+      Fertilizer Type: ${result.fertilizerType}.
+      Amount per Acre: ${result.amount}.
+      Application Schedule: ${result.schedule}.
+      Additional Tips: ${result.additionalTips}.
+    `;
+    setIsReading(true);
+    try {
+      const { audio } = await textToSpeech({ text: textToRead });
+      const audioPlayer = new Audio(audio);
+      audioPlayer.play();
+      audioPlayer.onended = () => setIsReading(false);
+    } catch (error) {
+      console.error('Error with text-to-speech:', error);
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: "Could not play audio. Please try again.",
+      });
+      setIsReading(false);
+    }
+  };
+  
   if (!isMounted) {
     return null;
   }
@@ -165,7 +192,13 @@ export function FertilizerPlannerCard() {
 
         {result && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
-            <h3 className="font-headline text-xl text-foreground">{t('fertilizerPlannerCard.resultsTitle')}</h3>
+            <div className="flex justify-between items-center">
+                <h3 className="font-headline text-xl text-foreground">{t('fertilizerPlannerCard.resultsTitle')}</h3>
+                <Button variant="ghost" size="icon" onClick={handleReadAloud} disabled={isReading}>
+                    {isReading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
+                    <span className="sr-only">Read aloud</span>
+                </Button>
+            </div>
             <div>
                 <h4 className="font-semibold text-primary">{t('fertilizerPlannerCard.resultFertilizerType')}</h4>
                 <p>{result.fertilizerType}</p>

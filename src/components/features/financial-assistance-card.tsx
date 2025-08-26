@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Loader2, MessageCircleQuestion } from 'lucide-react';
+import { Loader2, MessageCircleQuestion, Volume2 } from 'lucide-react';
 import { getFinancialAssistance } from '@/ai/flows/get-financial-assistance';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useLanguage } from '@/lib/i18n';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 export function FinancialAssistanceCard() {
   const { t } = useLanguage();
@@ -18,6 +19,7 @@ export function FinancialAssistanceCard() {
   const [category, setCategory] = useState('');
   const [assistance, setAssistance] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isReading, setIsReading] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +41,26 @@ export function FinancialAssistanceCard() {
     }
     setIsLoading(false);
   };
+  
+  const handleReadAloud = async () => {
+    if (!assistance) return;
+    setIsReading(true);
+    try {
+      const { audio } = await textToSpeech({ text: assistance });
+      const audioPlayer = new Audio(audio);
+      audioPlayer.play();
+      audioPlayer.onended = () => setIsReading(false);
+    } catch (error) {
+      console.error('Error with text-to-speech:', error);
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: "Could not play audio. Please try again.",
+      });
+      setIsReading(false);
+    }
+  };
+
 
   return (
     <Card>
@@ -82,7 +104,13 @@ export function FinancialAssistanceCard() {
 
         {assistance && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <h3 className="font-semibold text-lg text-primary mb-2">{t('financialAssistanceCard.resultsTitle')}</h3>
+             <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-lg text-primary">{t('financialAssistanceCard.resultsTitle')}</h3>
+                <Button variant="ghost" size="icon" onClick={handleReadAloud} disabled={isReading}>
+                    {isReading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
+                    <span className="sr-only">Read aloud</span>
+                </Button>
+            </div>
             <p className="text-foreground whitespace-pre-wrap">{assistance}</p>
           </div>
         )}

@@ -6,15 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, Volume2 } from 'lucide-react';
 import { askAi } from '@/ai/flows/ask-ai';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/i18n';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 export function AskAiCard() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isReading, setIsReading] = useState(false);
   const { toast } = useToast();
   const { language, t } = useLanguage();
 
@@ -36,6 +38,25 @@ export function AskAiCard() {
       });
     }
     setIsLoading(false);
+  };
+  
+  const handleReadAloud = async () => {
+    if (!answer) return;
+    setIsReading(true);
+    try {
+      const { audio } = await textToSpeech({ text: answer });
+      const audioPlayer = new Audio(audio);
+      audioPlayer.play();
+      audioPlayer.onended = () => setIsReading(false);
+    } catch (error) {
+      console.error('Error with text-to-speech:', error);
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: "Could not play audio. Please try again.",
+      });
+      setIsReading(false);
+    }
   };
 
   return (
@@ -67,7 +88,13 @@ export function AskAiCard() {
 
         {answer && (
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <h3 className="font-semibold text-lg text-primary mb-2">{t('communityQACard.resultsTitle')}</h3>
+            <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-lg text-primary">{t('communityQACard.resultsTitle')}</h3>
+                <Button variant="ghost" size="icon" onClick={handleReadAloud} disabled={isReading}>
+                    {isReading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
+                    <span className="sr-only">Read aloud</span>
+                </Button>
+            </div>
             <p className="text-foreground whitespace-pre-wrap">{answer}</p>
           </div>
         )}
