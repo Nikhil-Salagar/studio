@@ -1,4 +1,3 @@
-// use server'
 'use server';
 /**
  * @fileOverview Crop suggestion AI agent.
@@ -15,6 +14,7 @@ const SuggestCropsInputSchema = z.object({
   soilType: z.string().describe('The type of soil available.'),
   season: z.string().describe('The current season.'),
   location: z.string().describe('The location where the crops will be grown.'),
+  language: z.string().describe('The language for the answer.'),
 });
 export type SuggestCropsInput = z.infer<typeof SuggestCropsInputSchema>;
 
@@ -37,6 +37,7 @@ const prompt = ai.definePrompt({
   input: {schema: SuggestCropsInputSchema},
   output: {schema: SuggestCropsOutputSchema},
   prompt: `You are an expert agricultural advisor. Based on the provided soil type, season, and location, suggest the best crops to grow.
+The response must be in the following language: {{{language}}}.
 
 Soil Type: {{{soilType}}}
 Season: {{{season}}}

@@ -15,7 +15,7 @@ import { useLanguage } from '@/lib/i18n';
 const STORAGE_KEY = 'cropSuggestionData';
 
 export function CropSuggestionCard() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [soilType, setSoilType] = useState('');
   const [season, setSeason] = useState('');
   const [location, setLocation] = useState('');
@@ -59,7 +59,7 @@ export function CropSuggestionCard() {
     setIsLoading(true);
     setResult(null);
     try {
-      const response = await suggestCrops({ soilType, season, location });
+      const response = await suggestCrops({ soilType, season, location, language });
       setResult(response);
     } catch (error) {
       console.error('Error suggesting crops:', error);

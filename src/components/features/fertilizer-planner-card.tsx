@@ -15,7 +15,7 @@ import { useLanguage } from '@/lib/i18n';
 const STORAGE_KEY = 'fertilizerPlanData';
 
 export function FertilizerPlannerCard() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     cropType: '',
     soilType: '',
@@ -83,7 +83,8 @@ export function FertilizerPlannerCard() {
     try {
       const response = await recommendFertilizerPlan({
         ...formData,
-        historicalYield: Number(formData.historicalYield)
+        historicalYield: Number(formData.historicalYield),
+        language,
       });
       setResult(response);
     } catch (error) {

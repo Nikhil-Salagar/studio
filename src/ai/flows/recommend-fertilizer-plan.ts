@@ -17,6 +17,7 @@ const RecommendFertilizerPlanInputSchema = z.object({
   season: z.string().describe('The current season.'),
   historicalYield: z.number().describe('The historical yield of the crop in kg/acre.'),
   farmerExperience: z.string().describe('The experience level of the farmer.'),
+  language: z.string().describe('The language for the answer.'),
 });
 export type RecommendFertilizerPlanInput = z.infer<typeof RecommendFertilizerPlanInputSchema>;
 
@@ -39,6 +40,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert agricultural advisor specializing in fertilizer recommendations.
 
 Based on the provided information, recommend a fertilizer plan that includes the type of fertilizer, the amount to use per acre, and a schedule for application. Also, provide additional tips for optimizing fertilizer use.
+The response must be in the following language: {{{language}}}.
 
 Crop Type: {{{cropType}}}
 Soil Type: {{{soilType}}}

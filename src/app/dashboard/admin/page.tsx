@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/i18n';
@@ -34,6 +34,7 @@ export default function AdminPage() {
   const [currentPosts, setCurrentPosts] = useState<BlogPost[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(undefined);
   const [passwordInput, setPasswordInput] = useState('');
+  const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
 
   useEffect(() => {
     try {
@@ -72,6 +73,10 @@ export default function AdminPage() {
       try {
         sessionStorage.setItem(AUTH_KEY, 'true');
         setIsAuthenticated(true);
+        toast({
+            title: 'Access Granted',
+            description: 'Welcome to the admin panel.',
+        });
       } catch (error) {
         console.error('Session storage not available.');
         toast({
@@ -90,6 +95,35 @@ export default function AdminPage() {
       setPasswordInput('');
     }
   };
+
+  const handleDeleteClick = (post: BlogPost) => {
+    setPostToDelete(post);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!postToDelete) return;
+
+    try {
+        const updatedPosts = currentPosts.filter(p => p.slug !== postToDelete.slug);
+        setCurrentPosts(updatedPosts);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPosts));
+
+        toast({
+            title: "Post Deleted",
+            description: `"${postToDelete.title}" has been successfully deleted.`,
+        });
+    } catch(error) {
+        console.error("Failed to delete post", error);
+        toast({
+            variant: "destructive",
+            title: "Deletion Failed",
+            description: "Could not delete the post. Please try again.",
+        });
+    } finally {
+        setPostToDelete(null);
+    }
+  };
+
 
   const handleCancelPrompt = () => {
       router.back();
@@ -171,7 +205,7 @@ export default function AdminPage() {
                     <Link href={`/dashboard/edit/${post.slug}`}>
                       <Button variant="outline" size="sm" className="mr-2">{t('common.edit')}</Button>
                     </Link>
-                    <Button variant="destructive" size="sm">{t('common.delete')}</Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(post)}>{t('common.delete')}</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -179,6 +213,25 @@ export default function AdminPage() {
           </Table>
         </CardContent>
       </Card>
+      
+      {postToDelete && (
+         <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the post titled "{postToDelete.title}".
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    {t('common.delete')}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }
