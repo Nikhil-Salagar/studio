@@ -5,6 +5,30 @@ import { useState, useEffect, useCallback } from 'react';
 
 export function useTTS() {
   const [isReading, setIsReading] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  // This effect runs once to populate the voices when they become available.
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      setVoices(availableVoices);
+    };
+
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      // The event listener is crucial for mobile/webview environments
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+      // Initial fetch
+      handleVoicesChanged(); 
+    }
+
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+        window.speechSynthesis.cancel(); // Clean up on unmount
+      }
+    };
+  }, []);
+
 
   // Function to detect language from text using Unicode ranges
   const detectLanguage = (text: string) => {
@@ -27,9 +51,16 @@ export function useTTS() {
     const utterance = new SpeechSynthesisUtterance(text);
     const lang = detectLanguage(text);
     
-    // Find a suitable voice
-    const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(v => v.lang === lang);
+    // Refresh voices right before speaking to get the most current list
+    const currentVoices = window.speechSynthesis.getVoices();
+    if(currentVoices.length > 0) {
+      setVoices(currentVoices);
+    }
+
+    // Find a suitable voice from the state or the freshly fetched list
+    const voiceSource = voices.length > 0 ? voices : currentVoices;
+    const voice = voiceSource.find(v => v.lang === lang);
+
     if (voice) {
       utterance.voice = voice;
     }
@@ -47,29 +78,14 @@ export function useTTS() {
       setIsReading(false);
     };
     
-    utterance.onerror = () => {
+    utterance.onerror = (event) => {
+        console.error('SpeechSynthesisUtterance.onerror', event);
         setIsReading(false);
     }
 
     window.speechSynthesis.speak(utterance);
-  }, []);
+  }, [voices]);
 
-  // Ensure voices are loaded
-  useEffect(() => {
-    const handleVoicesChanged = () => {
-      // Re-check voices when they are loaded.
-    };
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
-      // Trigger loading voices
-      window.speechSynthesis.getVoices();
-    }
-    return () => {
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
-      }
-    };
-  }, []);
 
   return { isReading, readAloud };
 }
