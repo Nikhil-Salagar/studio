@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -22,7 +21,7 @@ const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const STORAGE_KEY = 'cropCarePlanData';
 
 export function CropCarePlannerCard() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     crop: '',
     harvestMonths: '',
@@ -185,6 +184,7 @@ export function CropCarePlannerCard() {
         ...formData,
         plantationDate: format(plantationDate!, 'yyyy-MM-dd'),
         harvestMonths: Number(formData.harvestMonths),
+        language,
         photoDataUri
       });
       setResult(response);

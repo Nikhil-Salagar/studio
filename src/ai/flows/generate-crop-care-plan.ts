@@ -17,6 +17,7 @@ const GenerateCropCarePlanInputSchema = z.object({
   photoDataUri: z.string().optional().describe(
       "An optional photo of the crop for analysis, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  language: z.string().describe('The language for the answer.'),
 });
 export type GenerateCropCarePlanInput = z.infer<typeof GenerateCropCarePlanInputSchema>;
 
@@ -42,6 +43,7 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateCropCarePlanInputSchema},
   output: {schema: GenerateCropCarePlanOutputSchema},
   prompt: `You are an expert agronomist. Create a month-wise crop care plan for the farmer.
+The response must be in the following language: {{{language}}}.
 
 Crop: {{{crop}}}
 Plantation Date: {{{plantationDate}}}
