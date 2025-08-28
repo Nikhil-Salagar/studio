@@ -61,7 +61,7 @@ export function useTTS() {
     setIsReading(true);
 
     const lang = detectLanguage(text);
-    const useResponsiveVoice = typeof window.responsiveVoice !== 'undefined';
+    const useResponsiveVoice = typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function';
 
     const onEnd = () => {
       if (isComponentMounted.current) {
@@ -81,7 +81,18 @@ export function useTTS() {
         'en-US': 'UK English Female',
       };
       const voiceName = voiceMap[lang] || 'UK English Female';
+      
+      // ResponsiveVoice takes a callback object as its 3rd parameter
       window.responsiveVoice.speak(text, voiceName, { onend: onEnd });
+      
+      // Fallback timer in case onend doesn't fire (some versions have issues)
+      const speechDuration = (text.length / 10) * 1000 + 2000; // Estimate duration
+      setTimeout(() => {
+        if(isComponentMounted.current && !window.responsiveVoice.isPlaying()){
+            onEnd();
+        }
+      }, speechDuration);
+
     } else if ('speechSynthesis' in window) {
       // Fallback to native browser TTS
       const utterance = new SpeechSynthesisUtterance(text);
@@ -90,15 +101,20 @@ export function useTTS() {
       utterance.pitch = 1;
       utterance.volume = 1;
       
+      // Let the browser choose the best available voice for the language
+      // This is more robust than trying to find a specific voice which may not have loaded.
       const voices = window.speechSynthesis.getVoices();
-      const voice = voices.find(v => v.lang === lang);
-      if (voice) {
-        utterance.voice = voice;
+      const voiceForLang = voices.find(v => v.lang === lang);
+      if (voiceForLang) {
+          utterance.voice = voiceForLang;
       }
       
       utterance.onend = onEnd;
       utterance.onerror = (event) => {
-        console.error('SpeechSynthesis Error:', event);
+        // Don't log empty error objects.
+        if(event.error) {
+            console.error('SpeechSynthesis Error:', event.error);
+        }
         onEnd(); // Ensure button state resets on error
       };
       
