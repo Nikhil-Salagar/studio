@@ -1,36 +1,26 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+// Extend the Window interface to include ResponsiveVoice
+declare global {
+  interface Window {
+    responsiveVoice: {
+      speak: (text: string, voice?: string, parameters?: any) => void;
+      cancel: () => void;
+      isPlaying: () => boolean;
+      getVoices: () => { name: string }[];
+    };
+  }
+}
 
 export function useTTS() {
   const [isReading, setIsReading] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const isComponentMounted = useRef(true);
 
-  // This effect runs once to populate the voices when they become available.
-  useEffect(() => {
-    const handleVoicesChanged = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      setVoices(availableVoices);
-    };
-
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      // The event listener is crucial for mobile/webview environments
-      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
-      // Initial fetch
-      handleVoicesChanged(); 
-    }
-
-    return () => {
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
-        window.speechSynthesis.cancel(); // Clean up on unmount
-      }
-    };
-  }, []);
-
-
-  // Function to detect language from text using Unicode ranges
+  // Language detection function
   const detectLanguage = (text: string) => {
     if (/[\u0900-\u097F]/.test(text)) return 'hi-IN'; // Devanagari (Hindi, Marathi)
     if (/[\u0C80-\u0CFF]/.test(text)) return 'kn-IN'; // Kannada
@@ -40,52 +30,118 @@ export function useTTS() {
     return 'en-US'; // Default to English
   };
 
+  // Maps our language code to ResponsiveVoice's voice name
+  const getResponsiveVoiceName = (lang: string) => {
+    const voiceMap: { [key: string]: string } = {
+      'hi-IN': 'Hindi Female',
+      'kn-IN': 'Kannada Female',
+      'ta-IN': 'Tamil Female',
+      'te-IN': 'Telugu Female',
+      'ml-IN': 'Malayalam Female',
+      'en-US': 'UK English Female', 
+    };
+    // Marathi uses Hindi voice
+    if (lang === 'mr-IN') return 'Hindi Female';
+    return voiceMap[lang] || 'UK English Female';
+  };
+
+  useEffect(() => {
+    isComponentMounted.current = true;
+    const handleVoicesChanged = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      if (isComponentMounted.current) {
+        setVoices(availableVoices);
+      }
+    };
+
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+      handleVoicesChanged();
+    }
+
+    return () => {
+      isComponentMounted.current = false;
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+        window.speechSynthesis.cancel();
+      }
+      if (typeof window !== 'undefined' && window.responsiveVoice) {
+        window.responsiveVoice.cancel();
+      }
+    };
+  }, []);
+
+
   const readAloud = useCallback((text: string) => {
-    if (!text || typeof window === 'undefined' || !window.speechSynthesis) {
+    if (!text || typeof window === 'undefined') {
       return;
     }
 
-    // Cancel any ongoing speech
+    // Cancel any previous speech from both engines
     window.speechSynthesis.cancel();
+    if (window.responsiveVoice) {
+      window.responsiveVoice.cancel();
+    }
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    setIsReading(true);
+
     const lang = detectLanguage(text);
-    
-    // Refresh voices right before speaking to get the most current list
     const currentVoices = window.speechSynthesis.getVoices();
-    if(currentVoices.length > 0) {
-      setVoices(currentVoices);
-    }
+    const nativeVoice = currentVoices.find(v => v.lang === lang);
 
-    // Find a suitable voice from the state or the freshly fetched list
-    const voiceSource = voices.length > 0 ? voices : currentVoices;
-    const voice = voiceSource.find(v => v.lang === lang);
+    // Try native TTS first if a voice is available
+    if (nativeVoice) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = nativeVoice;
+      utterance.lang = lang;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
 
-    if (voice) {
-      utterance.voice = voice;
-    }
-    
-    utterance.lang = lang;
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-
-    utterance.onstart = () => {
-      setIsReading(true);
-    };
-
-    utterance.onend = () => {
-      setIsReading(false);
-    };
-    
-    utterance.onerror = (event) => {
-        console.error('SpeechSynthesisUtterance.onerror', event);
+      utterance.onend = () => {
+        if (isComponentMounted.current) {
+            setIsReading(false);
+        }
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('Native SpeechSynthesis Error:', event);
+        // If native fails, fallback to ResponsiveVoice
+        if (window.responsiveVoice) {
+          console.log('Falling back to ResponsiveVoice.');
+          const responsiveVoiceName = getResponsiveVoiceName(lang);
+          window.responsiveVoice.speak(text, responsiveVoiceName, {
+            onend: () => {
+                if (isComponentMounted.current) {
+                    setIsReading(false);
+                }
+            }
+          });
+        } else {
+            if (isComponentMounted.current) {
+                setIsReading(false);
+            }
+        }
+      };
+      window.speechSynthesis.speak(utterance);
+    } 
+    // Fallback to ResponsiveVoice if native voice not found or if the library is available
+    else if (window.responsiveVoice) {
+      console.log('Using ResponsiveVoice as primary.');
+      const responsiveVoiceName = getResponsiveVoiceName(lang);
+      window.responsiveVoice.speak(text, responsiveVoiceName, {
+        onend: () => {
+            if (isComponentMounted.current) {
+                setIsReading(false);
+            }
+        }
+      });
+    } else {
+        // No TTS engine available
+        console.warn('No TTS engine available.');
         setIsReading(false);
     }
-
-    window.speechSynthesis.speak(utterance);
-  }, [voices]);
-
+  }, []);
 
   return { isReading, readAloud };
 }
