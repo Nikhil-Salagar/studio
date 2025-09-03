@@ -88,7 +88,7 @@ export function useTTS() {
       // Fallback timer in case onend doesn't fire (some versions have issues)
       const speechDuration = (text.length / 10) * 1000 + 2000; // Estimate duration
       setTimeout(() => {
-        if(isComponentMounted.current && !window.responsiveVoice.isPlaying()){
+        if(isComponentMounted.current && window.responsiveVoice && !window.responsiveVoice.isPlaying()){
             onEnd();
         }
       }, speechDuration);
@@ -112,10 +112,10 @@ export function useTTS() {
       utterance.onend = onEnd;
       utterance.onerror = (event) => {
         // Don't log empty error objects.
-        if(event.error) {
+        if(event.error && event.error !== 'interrupted') {
             console.error('SpeechSynthesis Error:', event.error);
         }
-        onEnd(); // Ensure button state resets on error
+        onEnd(); // Ensure state resets on error
       };
       
       window.speechSynthesis.speak(utterance);
