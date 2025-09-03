@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,8 +19,14 @@ export function FinancialAssistanceCard() {
   const [category, setCategory] = useState('');
   const [assistance, setAssistance] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { isReading, readAloud } = useTTS();
+  const { readAloud } = useTTS();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (assistance) {
+      readAloud(assistance);
+    }
+  }, [assistance, readAloud]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,15 +92,6 @@ export function FinancialAssistanceCard() {
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
              <h3 className="font-semibold text-lg text-primary mb-2">{t('financialAssistanceCard.resultsTitle')}</h3>
             <p className="text-foreground whitespace-pre-wrap">{assistance}</p>
-             <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => readAloud(assistance)} 
-                disabled={isReading}
-                className="mt-4"
-              >
-                {isReading ? '🔊 Reading…' : '🔊 Listen'}
-            </Button>
           </div>
         )}
       </CardContent>

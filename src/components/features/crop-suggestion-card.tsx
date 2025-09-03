@@ -22,7 +22,7 @@ export function CropSuggestionCard() {
   const [location, setLocation] = useState('');
   const [result, setResult] = useState<SuggestCropsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { isReading, readAloud } = useTTS();
+  const { readAloud } = useTTS();
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   
@@ -42,6 +42,11 @@ export function CropSuggestionCard() {
     setIsMounted(true);
   }, []);
 
+  const getSuggestionsAsText = () => {
+    if (!result || !result.crops) return "";
+    return result.crops.map(crop => `${crop.name}: ${crop.reason}`).join('. ');
+  };
+
   useEffect(() => {
     if (isMounted) {
       try {
@@ -52,6 +57,13 @@ export function CropSuggestionCard() {
       }
     }
   }, [soilType, season, location, result, isMounted]);
+
+  useEffect(() => {
+    if(result) {
+        const text = getSuggestionsAsText();
+        readAloud(text);
+    }
+  }, [result]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,11 +86,6 @@ export function CropSuggestionCard() {
     setIsLoading(false);
   };
   
-  const getSuggestionsAsText = () => {
-    if (!result || !result.crops) return "";
-    return result.crops.map(crop => `${crop.name}: ${crop.reason}`).join('. ');
-  };
-
   if (!isMounted) {
     return null; // Or a loading skeleton
   }
@@ -127,14 +134,6 @@ export function CropSuggestionCard() {
           <div className="mt-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-headline text-xl text-foreground">{t('cropSuggestionCard.resultsTitle')}</h3>
-               <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => readAloud(getSuggestionsAsText())} 
-                    disabled={isReading}
-                  >
-                    {isReading ? '🔊 Reading…' : '🔊 Listen'}
-                </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {result.crops.map((crop, index) => (

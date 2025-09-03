@@ -23,7 +23,7 @@ export function PlantDiseaseDetectorCard() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [result, setResult] = useState<DetectPlantDiseaseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { isReading, readAloud } = useTTS();
+  const { readAloud } = useTTS();
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,6 +42,15 @@ export function PlantDiseaseDetectorCard() {
     setIsMounted(true);
   }, []);
 
+  const getDeseaseAsText = () => {
+    if (!result) return "";
+    return `
+      Detected Disease or Pest: ${result.disease}.
+      Confidence is ${(result.confidence * 100).toFixed(0)} percent.
+      Recommended Treatment: ${result.treatment}.
+    `;
+  };
+
   useEffect(() => {
     if (isMounted) {
       try {
@@ -54,6 +63,13 @@ export function PlantDiseaseDetectorCard() {
       }
     }
   }, [photoPreview, result, isMounted]);
+
+  useEffect(() => {
+    if (result) {
+        const text = getDeseaseAsText();
+        readAloud(text);
+    }
+  }, [result]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,15 +117,6 @@ export function PlantDiseaseDetectorCard() {
     }
     setIsLoading(false);
   };
-  
-  const getDeseaseAsText = () => {
-    if (!result) return "";
-    return `
-      Detected Disease or Pest: ${result.disease}.
-      Confidence is ${(result.confidence * 100).toFixed(0)} percent.
-      Recommended Treatment: ${result.treatment}.
-    `;
-  };
 
   if (!isMounted) {
     return null;
@@ -151,14 +158,6 @@ export function PlantDiseaseDetectorCard() {
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
             <div className="flex justify-between items-center">
                 <h3 className="font-headline text-xl text-foreground">{t('plantDiseaseDetectorCard.resultsTitle')}</h3>
-                <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => readAloud(getDeseaseAsText())} 
-                    disabled={isReading}
-                  >
-                    {isReading ? '🔊 Reading…' : '🔊 Listen'}
-                </Button>
             </div>
             <div>
               <h4 className="font-semibold text-primary">{t('plantDiseaseDetectorCard.resultDisease')}</h4>

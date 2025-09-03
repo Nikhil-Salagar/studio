@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -31,7 +32,7 @@ export function CropCarePlannerCard() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateCropCarePlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { isReading, readAloud } = useTTS();
+  const { readAloud } = useTTS();
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +57,21 @@ export function CropCarePlannerCard() {
     setIsMounted(true);
   }, []);
 
+  const getPlanAsText = () => {
+    if (!result) return "";
+    let textToRead = "";
+    if (result.photoAnalysis) {
+      textToRead += `${t('cropCarePlannerCard.photoAnalysis')}: ${result.photoAnalysis}. `;
+    }
+    result.monthlyPlan.forEach(plan => {
+      textToRead += `${t('cropCarePlannerCard.month')} ${plan.month}: 
+        ${t('cropCarePlannerCard.fertilizer')}: ${plan.fertilizer}. 
+        ${t('cropCarePlannerCard.herbicide')}: ${plan.herbicide}. 
+        ${t('cropCarePlannerCard.pesticide')}: ${plan.pesticide}. `;
+    });
+    return textToRead;
+  }
+
   useEffect(() => {
     if (isMounted) {
       try {
@@ -66,6 +82,13 @@ export function CropCarePlannerCard() {
       }
     }
   }, [formData, plantationDate, photoPreview, result, isMounted]);
+
+  useEffect(() => {
+    if(result){
+        const planText = getPlanAsText();
+        readAloud(planText);
+    }
+  }, [result]);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -198,22 +221,7 @@ export function CropCarePlannerCard() {
     }
     setIsLoading(false);
   };
-  
-  const getPlanAsText = () => {
-    if (!result) return "";
-    let textToRead = "";
-    if (result.photoAnalysis) {
-      textToRead += `${t('cropCarePlannerCard.photoAnalysis')}: ${result.photoAnalysis}. `;
-    }
-    result.monthlyPlan.forEach(plan => {
-      textToRead += `${t('cropCarePlannerCard.month')} ${plan.month}: 
-        ${t('cropCarePlannerCard.fertilizer')}: ${plan.fertilizer}. 
-        ${t('cropCarePlannerCard.herbicide')}: ${plan.herbicide}. 
-        ${t('cropCarePlannerCard.pesticide')}: ${plan.pesticide}. `;
-    });
-    return textToRead;
-  }
-  
+
   if (!isMounted) {
     return null;
   }
@@ -322,14 +330,6 @@ export function CropCarePlannerCard() {
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
              <div className="flex justify-between items-center">
                 <h3 className="font-headline text-xl text-foreground">{t('cropCarePlannerCard.resultsTitle')}</h3>
-                 <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => readAloud(getPlanAsText())} 
-                    disabled={isReading}
-                  >
-                    {isReading ? '🔊 Reading…' : '🔊 Listen'}
-                </Button>
             </div>
             {result.photoAnalysis && (
                 <div>

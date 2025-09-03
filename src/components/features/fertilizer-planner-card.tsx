@@ -27,7 +27,7 @@ export function FertilizerPlannerCard() {
   });
   const [result, setResult] = useState<RecommendFertilizerPlanOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { isReading, readAloud } = useTTS();
+  const { readAloud } = useTTS();
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
 
@@ -52,6 +52,16 @@ export function FertilizerPlannerCard() {
     setIsMounted(true);
   }, []);
 
+  const getPlanAsText = () => {
+    if (!result) return "";
+    return `
+      Fertilizer Type: ${result.fertilizerType}.
+      Amount per Acre: ${result.amount}.
+      Application Schedule: ${result.schedule}.
+      Additional Tips: ${result.additionalTips}.
+    `;
+  };
+
   useEffect(() => {
     if (isMounted) {
       try {
@@ -62,6 +72,13 @@ export function FertilizerPlannerCard() {
       }
     }
   }, [formData, result, isMounted]);
+
+  useEffect(() => {
+    if (result) {
+        const text = getPlanAsText();
+        readAloud(text);
+    }
+  }, [result]);
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,16 +115,6 @@ export function FertilizerPlannerCard() {
       });
     }
     setIsLoading(false);
-  };
-  
-  const getPlanAsText = () => {
-    if (!result) return "";
-    return `
-      Fertilizer Type: ${result.fertilizerType}.
-      Amount per Acre: ${result.amount}.
-      Application Schedule: ${result.schedule}.
-      Additional Tips: ${result.additionalTips}.
-    `;
   };
   
   if (!isMounted) {
@@ -179,14 +186,6 @@ export function FertilizerPlannerCard() {
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
             <div className="flex justify-between items-center">
                 <h3 className="font-headline text-xl text-foreground">{t('fertilizerPlannerCard.resultsTitle')}</h3>
-                 <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => readAloud(getPlanAsText())} 
-                    disabled={isReading}
-                  >
-                    {isReading ? '🔊 Reading…' : '🔊 Listen'}
-                </Button>
             </div>
             <div>
                 <h4 className="font-semibold text-primary">{t('fertilizerPlannerCard.resultFertilizerType')}</h4>

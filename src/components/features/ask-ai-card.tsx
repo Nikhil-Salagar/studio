@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,7 +18,13 @@ export function AskAiCard() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { language, t } = useLanguage();
-  const { isReading, readAloud } = useTTS();
+  const { readAloud } = useTTS();
+
+  useEffect(() => {
+    if (answer) {
+      readAloud(answer);
+    }
+  }, [answer, readAloud]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,15 +77,6 @@ export function AskAiCard() {
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <h3 className="font-semibold text-lg text-primary mb-2">{t('communityQACard.resultsTitle')}</h3>
             <p className="text-foreground whitespace-pre-wrap">{answer}</p>
-            <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => readAloud(answer)} 
-                disabled={isReading}
-                className="mt-4"
-              >
-                {isReading ? '🔊 Reading…' : '🔊 Listen'}
-            </Button>
           </div>
         )}
       </CardContent>
